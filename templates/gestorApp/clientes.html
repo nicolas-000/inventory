@@ -1,0 +1,73 @@
+{% extends "gestorApp/base.html" %}
+
+{% block titulo %}Gestor de Clientes{% endblock %}
+
+{% block contenido %}
+<div class="container">
+  <form class="row g-3">
+    <div class="col-md-6">
+      <label for="inputNombre" class="form-label">Nombre</label>
+      <input type="text" class="form-control" id="inputNombre">
+    </div>
+    <div class="col-md-6">
+      <label for="inputApellido" class="form-label">Apellido</label>
+      <input type="text" class="form-control" id="inputApellido">
+    </div>
+    <div class="col-md-6">
+      <label for="inputRut" class="form-label">Rut</label>
+      <input type="text" class="form-control" id="inputRut" placeholder="12345678-9">
+    </div>
+    <div class="col-md-6">
+      <label for="inputAddress2" class="form-label">Email</label>
+      <input type="email" class="form-control" id="inputEmail" placeholder="email@correo.com">
+    </div>
+    <div class="col-12">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="gridCheck">
+        <label class="form-check-label" for="gridCheck">
+          Check me out
+        </label>
+      </div>
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-primary">Ingresar</button>
+    </div>
+    <div class="col-2">
+      <button type="submit" class="btn btn-warning">Eliminar</button>
+    </div>
+    <div class="col-8 d-flex justify-content-end">
+      <button type="submit" class="btn btn-light border">Inspeccionar</button>
+    </div>
+  </form>
+
+  <table class="table table-striped table-hover my-5">
+    <thead>
+      <tr>
+        <th scope="col">Rut</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Apellido</th>
+        <th scope="col">Num de autos</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <th scope="row">2</th>
+        <td>Jacob</td>
+        <td>Thornton</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <th scope="row">3</th>
+        <td colspan="2">Larry the Bird</td>
+        <td>3</td>
+      </tr>
+    </tbody>  
+  </table>
+</div>
+{% endblock %}
