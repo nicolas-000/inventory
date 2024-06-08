@@ -1,4 +1,5 @@
 {% extends "gestorApp/base.html" %}
+{% load static %}
 
 {% block titulo %}Pagina de Inicio{% endblock %}
 
@@ -10,27 +11,30 @@
               <div class="col-12">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="text-center mb-4">Iniciar Sesióerfefre</h2>
-                        <form>
-                        </form>
+                        <h2 class="text-center mb-4">Agenda</h2>
+                        <div class="text-center mb-4">
+                            <img src="{% static 'img/agenda.png' %}" alt="Agenda" class="img-fluid">
+                        </div>
                     </div>
                 </div>
               </div>
               <div class="col-6">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="text-center mb-4">Iniciar Sesióerfefre</h2>
-                        <form>
-                        </form>
+                        <h2 class="text-center mb-4">Vehículos</h2>
+                        <div class="text-center mb-4">
+                            <img src="{% static 'img/vehiculos.png' %}" alt="Vehículos" class="img-fluid">
+                        </div>
                     </div>
                 </div>
               </div>
               <div class="col-6">
                 <div class="card">
                     <div class="card-body">
-                        <h2 class="text-center mb-4">Iniciar Sesióerfefre</h2>
-                        <form>
-                        </form>
+                        <h2 class="text-center mb-4">Clientes</h2>
+                        <div class="text-center mb-4">
+                            <img src="{% static 'img/clientes.png' %}" alt="Clientes" class="img-fluid">
+                        </div>
                     </div>
                 </div>
               </div>
@@ -38,4 +42,26 @@
       </div>
   </div>
 </div>
+<table class="table mt-4">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Juan Pérez</td>
+            <td>2024-06-01</td>
+            <td>10:00</td>
+        </tr>
+        <tr>
+            <td>Maria García</td>
+            <td>2024-06-02</td>
+            <td>11:00</td>
+        </tr>
+        <!-- Agrega más filas según sea necesario -->
+    </tbody>
+</table>
 {% endblock %}
