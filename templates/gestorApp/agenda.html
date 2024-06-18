@@ -1,0 +1,15 @@
+{% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Agenda{% endblock %} 
+{% block css %}<link
+  rel="stylesheet"
+  href="{% static 'css/dataTables.bootstrap5.css' %}"
+/>{% endblock %} {% block contenido %}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-12">
+      <h1 class="text-center">Agenda</h1>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
