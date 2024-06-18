@@ -48,7 +48,7 @@ de Clientes{% endblock %} {% block css %}<link
     </div>
   </form>
 
-  <div class="container my-5">
+  <div class="my-5">
     <table
       id="clientsTable"
       class="table table-striped table-hover"
@@ -64,7 +64,19 @@ de Clientes{% endblock %} {% block css %}<link
       </thead>
       <tbody>
         <tr>
-          <td>Tiger Nixon</td>
+          <td>1</td>
+          <td>System Architect</td>
+          <td>Edinburgh</td>
+          <td>61</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>System Architect</td>
+          <td>Edinburgh</td>
+          <td>61</td>
+        </tr>
+        <tr>
+          <td>3</td>
           <td>System Architect</td>
           <td>Edinburgh</td>
           <td>61</td>
@@ -85,7 +97,9 @@ de Clientes{% endblock %} {% block css %}<link
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script>
   $(document).ready(function () {
-    $("#clientsTable").DataTable();
+    $("#clientsTable").DataTable({language: {
+        url: " {% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
+    }});
   });
 </script>
 {% endblock %}
