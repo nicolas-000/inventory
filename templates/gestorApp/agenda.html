@@ -1,8 +1,11 @@
 {% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Agenda{% endblock %} 
-{% block css %}<link
-  rel="stylesheet"
-  href="{% static 'css/dataTables.bootstrap5.css' %}"
-/>{% endblock %} {% block contenido %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
+<script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+
+{% endblock %}
+{% block contenido %}
 
 <div class="container">
   <div class="row justify-content-center">
@@ -11,5 +14,81 @@
     </div>
   </div>
 </div>
+
+<div id="calendar" class="fc-theme-bootstrap5 fc-liquid-hack"></div>
+
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventModalLabel">Crear Reserva</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" id="eventForm">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-6 mb-3">
+              <label>Titulo:</label>
+              {{ form.nombreAgendado }}
+              {% for error in form.nombreAgendado.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-6 mb-3">
+              {{ form.fechaHora.label_tag }}
+              {{ form.fechaHora }}
+              {% for error in form.fechaHora.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-6 mb-3">
+              {{ form.telefono.label_tag }}
+              {{ form.telefono }}
+              {% for error in form.telefono.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-6 mb-3">
+              {{ form.tipoVehiculo.label_tag }}
+              {{ form.tipoVehiculo }}
+              {% for error in form.tipoVehiculo.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-6 mb-3">
+              {{ form.servicioSolicitado.label_tag }}
+              {{ form.servicioSolicitado }}
+              {% for error in form.servicioSolicitado.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-6 mb-3">
+              {{ form.descripcion.label_tag }}
+              {{ form.descripcion }}
+              {% for error in form.descripcion.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+            <div class="col-6 mb-3">
+              {{ form.estado.label_tag }}
+              {{ form.estado }}
+              {% for error in form.estado.errors %}
+                <span class="text-danger">{{ error }}</span>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="{% static 'js/calendar.js' %}"></script>
 
 {% endblock %}
