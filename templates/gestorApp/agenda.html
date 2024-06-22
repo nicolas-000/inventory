@@ -1,11 +1,12 @@
-{% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Agenda{% endblock %} 
+{% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Agenda{% endblock %}
 {% block css %}
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js'></script>
-<script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css' rel='stylesheet'>
+<link href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css' rel='stylesheet'>
 
-{% endblock %}
-{% block contenido %}
+{% endblock %} {% block contenido %}
 
 <div class="container">
   <div class="row justify-content-center">
@@ -15,14 +16,26 @@
   </div>
 </div>
 
-<div id="calendar" class="fc-theme-bootstrap5 fc-liquid-hack"></div>
+<div id="calendar" class="fc fc-media-screen fc-direction-ltr fc-theme-standard fc-liquid-hack"></div>
 
-<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="eventModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="eventModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="eventModalLabel">Crear Reserva</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <form method="post" id="eventForm">
@@ -30,57 +43,48 @@
           <div class="row">
             <div class="col-6 mb-3">
               <label>Titulo:</label>
-              {{ form.nombreAgendado }}
-              {% for error in form.nombreAgendado.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              {{ form.nombreAgendado }} {{ form.nombreAgendado.errors }}
             </div>
             <div class="col-6 mb-3">
-              {{ form.fechaHora.label_tag }}
-              {{ form.fechaHora }}
-              {% for error in form.fechaHora.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              <label>Hora de inicio</label>
+              {{ form.fechaInicio }} {{ form.fechaInicio.errors }}
             </div>
             <div class="col-6 mb-3">
-              {{ form.telefono.label_tag }}
-              {{ form.telefono }}
-              {% for error in form.telefono.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              <label>Hora de termino</label>
+              {{ form.fechaTermino }} {{ form.fechaTermino.errors }}
             </div>
             <div class="col-6 mb-3">
-              {{ form.tipoVehiculo.label_tag }}
-              {{ form.tipoVehiculo }}
-              {% for error in form.tipoVehiculo.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              <label>Telefono</label>
+              {{ form.telefono }} {{ form.telefono.errors }}
             </div>
             <div class="col-6 mb-3">
-              {{ form.servicioSolicitado.label_tag }}
-              {{ form.servicioSolicitado }}
-              {% for error in form.servicioSolicitado.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              <label>Tipo de vehiculo</label>
+              {{ form.tipoVehiculo }} {{ form.tipoVehiculo.errors }}
             </div>
             <div class="col-6 mb-3">
-              {{ form.descripcion.label_tag }}
-              {{ form.descripcion }}
-              {% for error in form.descripcion.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              <label>Servicio solicitado</label>
+              {{ form.servicioSolicitado }} {{ form.servicioSolicitado.errors }}
             </div>
             <div class="col-6 mb-3">
-              {{ form.estado.label_tag }}
-              {{ form.estado }}
-              {% for error in form.estado.errors %}
-                <span class="text-danger">{{ error }}</span>
-              {% endfor %}
+              <label>Descripcion</label>
+              {{ form.descripcion }} {{ form.descripcion.errors }}
+            </div>
+            <div class="col-6 mb-3">
+              <label>Estado</label>
+              {{ form.estado }} {{ form.estado.errors }}
             </div>
           </div>
           <div class="modal-footer justify-content-center">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Cerrar
+            </button>
+            <button type="submit" class="btn btn-primary">
+              Guardar cambios
+            </button>
           </div>
         </form>
       </div>
@@ -88,7 +92,52 @@
   </div>
 </div>
 
+<script src='fullcalendar/dist/index.global.js'></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+  var calendarEl = document.getElementById("calendar");
+  var calendar = new FullCalendar.Calendar(calendarEl, {
+    themeSystem: 'bootstrap5'
+    headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek'
+      },
+    initialView: "dayGridMonth",
+    navLinks: true, // can click day/week names to navigate views
+    selectable: true,
+    selectMirror: true,
+    select: function(info) {
 
-<script src="{% static 'js/calendar.js' %}"></script>
+      var startDate = new Date(info.start.getTime() - (info.start.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+      var endDate = new Date(info.end.getTime() - (info.end.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+      startDate = startDate.replace('T', ' ');
+      endDate = endDate.replace('T', ' ');
 
+      console.log(startDate)
+      console.log(endDate)
+
+
+      $('#id_fechaInicio').val(startDate);
+      $('#id_fechaTermino').val(endDate);
+      $('#eventModal').modal('show');
+
+      calendar.unselect()
+      },
+      editable: true,
+      dayMaxEvents: true, // allow "more" link when too many events
+      events: [
+        {% for agenda in agendas %}
+          {
+            title: 'el mejor {{ agenda.nombreAgendado }}',
+            start: '{{ agenda.fechaInicio|date:"Y-m-d H:i:s" }}',
+            end: '{{ agenda.fechaTermino|date:"Y-m-d H:i:s" }}',
+            description: 'Vehiculo:{{ agenda.tipoVehiculo|escapejs }} - Servicio:{{ agenda.servicioSolicitado|escapejs }} - Telefono:{{ agenda.telefono|escapejs }} - Descripcion:{{ agenda.descripcion|escapejs }}'
+          },
+        {% endfor %}
+      ],
+  });
+  calendar.render();
+  });
+</script>
 {% endblock %}

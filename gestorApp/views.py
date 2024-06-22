@@ -20,4 +20,12 @@ def agendar(req):
             return redirect('agendar')
     else:
         form = AgendaForm()
-    return render(req, 'gestorApp/agenda.html', {'form': form})
+        
+    agendas = Agenda.objects.all()
+    data = {
+        'form': form,
+        'agendas': agendas,
+    }    
+        
+        
+    return render(req, 'gestorApp/agenda.html', data)

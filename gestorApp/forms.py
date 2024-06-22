@@ -4,7 +4,8 @@ from gestorApp.choises import estadoReserva, tipoVehiculo
 
 class AgendaForm(forms.ModelForm):
     nombreAgendado = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese titulo de reserva'}))
-    fechaHora = forms.DateTimeField(widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el día de reserva', 'type': 'date'}))
+    fechaInicio = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'class' : 'form-control', 'placeholder':'Fecha y hora de inicio','type':'datetime-local','readonly':'true'}))
+    fechaTermino = forms.DateTimeField(widget=forms.DateTimeInput(attrs={'class' : 'form-control', 'placeholder':'Fecha y hora de termino','type':'datetime-local','readonly':'true'}))
     telefono = forms.CharField(widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese Número del cliente'}))
     tipoVehiculo = forms.ChoiceField(choices=tipoVehiculo, widget=forms.Select(attrs={'class': 'form-select'}))
     servicioSolicitado = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese tipo de servicio'}))

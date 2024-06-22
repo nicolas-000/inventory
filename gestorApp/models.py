@@ -21,7 +21,8 @@ class Administrativa(Persona):
 class Agenda(models.Model):
     idAgendado = models.AutoField(primary_key=True)
     nombreAgendado = models.CharField(max_length=100)
-    fechaHora = models.DateTimeField()
+    fechaInicio = models.DateTimeField()
+    fechaTermino = models.DateTimeField()
     telefono = models.CharField(max_length=15)
     tipoVehiculo = models.CharField(max_length=2, choices=tipoVehiculo, default='VP')
     servicioSolicitado = models.CharField(max_length=100, blank=True, null=True) 
