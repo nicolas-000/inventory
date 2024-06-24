@@ -1,9 +1,15 @@
 {% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Gestor
 de Clientes{% endblock %} {% block css %}<link
   rel="stylesheet"
-  href="{% static 'css/dataTables.bootstrap5.css' %}"
-/>{% endblock %} {% block contenido %}
+  href="{% static 'css/dataTables.bootstrap5.min.css' %}"
+/>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>{% endblock %} {% block contenido %}
 <div class="container">
+  <div class="text-center my-3">
+    <h1>Clientes</h1>
+  </div>
+
+  <!-- Formulario Cliente -->
   <form class="row g-3">
     <div class="col-md-6">
       <label for="inputNombre" class="form-label">Nombre</label>
@@ -23,7 +29,7 @@ de Clientes{% endblock %} {% block css %}<link
       />
     </div>
     <div class="col-md-6">
-      <label for="inputAddress2" class="form-label">Email</label>
+      <label for="inputEmail" class="form-label">Email</label>
       <input
         type="email"
         class="form-control"
@@ -33,8 +39,44 @@ de Clientes{% endblock %} {% block css %}<link
     </div>
     <div class="col-12">
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="gridCheck" />
-        <label class="form-check-label" for="gridCheck"> Check me out </label>
+        <input class="form-check-input" type="checkbox" id="agregarVehiculo" />
+        <label class="form-check-label" for="agregarVehiculo">Registrar vehículo inmediatamente</label>
+      </div>
+    </div>
+
+    <!-- Formulario vehículo  -->
+    <div class="container row border border-primary-subtle my-3 py-3 rounded bg-info bg-opacity-10 d-none" id="vehiculoCliente">
+      <div class="text-center">
+        <h3>Vehículo</h3>
+      </div>
+      <div class="col-md-6">
+        <label for="inputPatente" class="form-label">Patente</label>
+        <input
+          type="text"
+          class="form-control"
+          id="inputPatente"
+          placeholder="AA-BB-00"
+        />
+      </div>
+      <div class="col-md-6">
+        <label for="inputMarca" class="form-label">Marca</label>
+        <input
+          type="text"
+          class="form-control"
+          id="inputMarca"
+          placeholder="Marca"
+        />
+      </div>
+      <div class="col-md-12 mt-2">
+        <label for="inputDescripcion" class="form-label">Detalles Vehículo</label>
+        <textarea
+          type="text"
+          class="form-control"
+          id="inputDescripcion"
+          placeholder="Descripcion"
+          rows="2"
+        />
+        </textarea>
       </div>
     </div>
     <div class="col-2">
@@ -44,10 +86,31 @@ de Clientes{% endblock %} {% block css %}<link
       <button type="submit" class="btn btn-warning">Eliminar</button>
     </div>
     <div class="col-8 d-flex justify-content-end">
-      <button type="submit" class="btn btn-light border">Inspeccionar</button>
+      <button type="button" class="btn btn-light border" data-bs-toggle="modal" data-bs-target="#clienteModal">Inspeccionar</button>
     </div>
   </form>
 
+  <!-- Modal  -->
+  <div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="clienteModalLabel">Cliente</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p>Modal body text goes here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+  <!-- Tabla -->
   <div class="my-5">
     <table
       id="clientsTable"
@@ -82,24 +145,75 @@ de Clientes{% endblock %} {% block css %}<link
           <td>61</td>
         </tr>
       </tbody>
-      <tfoot>
-        <tr>
-          <th>Rut</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Num de autos</th>
-        </tr>
-      </tfoot>
     </table>
   </div>
 </div>
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script>
+  var getUrlParameter = function getUrlParameter(sParam) {
+    var sPageURL = window.location.search.substring(1),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName,
+        i;
+
+    for (i = 0; i < sURLVariables.length; i++) {
+        sParameterName = sURLVariables[i].split('=');
+
+        if (sParameterName[0] === sParam) {
+            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+        }
+    }
+    return false;
+};
+</script>
+<!-- Script Datatable -->
+<script>
+  var rut = getUrlParameter('rut');
+  if (!rut) {
+    rut = "";
+  } else {
+    // Mostrar Modal al cargar la pagina
+    const myModal = bootstrap.Modal.getOrCreateInstance('#clienteModal');
+    myModal.show();
+  }
+
   $(document).ready(function () {
     $("#clientsTable").DataTable({language: {
         url: " {% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
-    }});
+    },
+    select: {
+        style: 'single',
+        info: false,
+    },
+    search: {
+        search: rut
+    }
   });
+  });
+</script>
+
+<!-- Script toggle formulario vehiculo -->
+<script>
+  $( "#agregarVehiculo" ).on( "click", function() {
+    $( "#vehiculoCliente" ).toggleClass("d-none");
+} );
+</script>
+
+<!-- Cambiar contenido del Modal -->
+<script>
+  const myModal = document.getElementById('clienteModal');
+  if (myModal) {
+  myModal.addEventListener('show.bs.modal', event => {
+    const recipient = document.getElementsByClassName("selected")[0].children[0].textContent;
+    // Update the modal's content.
+    const modalTitle = myModal.querySelector('.modal-title')
+    // const modalBodyInput = myModal.querySelector('.modal-body input')
+
+    modalTitle.textContent = `Cliente ${recipient}`
+    // modalBodyInput.value = recipient
+    console.log(recipient);
+  })
+}
 </script>
 {% endblock %}
