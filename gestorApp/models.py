@@ -35,18 +35,20 @@ class Agenda(models.Model):
         return self.name
 
 class Vehiculo(models.Model):
-    marca= models.CharField(max_length=100)
-    patente= models.CharField(max_length=8)
-    descripcion= models.CharField(max_length=300)
+    marca = models.CharField(max_length=100)
+    patente = models.CharField(max_length=8)
+    descripcion = models.CharField(max_length=300)
+    propietario = models.ForeignKey(Cliente, on_delete=models.RESTRICT, related_name="vehiculos")
     
     def __str__(self):
         return self.name
 
 class Atencion(models.Model):
-    descripcion= models.CharField(max_length=300)
-    fechaInicio= models.DateField()
-    fechaTermino= models.DateField()
-    costos= models.PositiveIntegerField()
+    descripcion = models.CharField(max_length=300)
+    fechaInicio = models.DateField()
+    fechaTermino = models.DateField()
+    costos = models.PositiveIntegerField()
+    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, related_name="historial")
 
     def __str__(self):
         return self.name
