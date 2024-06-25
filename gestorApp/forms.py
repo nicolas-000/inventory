@@ -1,5 +1,5 @@
 from django import forms
-from gestorApp.models import Agenda
+from gestorApp.models import Agenda, Cliente
 from gestorApp.choises import estadoReserva, tipoVehiculo  
 
 class AgendaForm(forms.ModelForm):
@@ -15,3 +15,52 @@ class AgendaForm(forms.ModelForm):
     class Meta:
         model = Agenda
         fields = '__all__'
+
+class ClienteForm(forms.ModelForm):
+    nombreCompleto = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre Completo'}))
+    rut = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '12345678-9'}))
+    email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'mail@mail.com'}))
+    checked = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'agregarVehiculo'}), required=False)
+
+    class Meta:
+        model = Cliente
+        fields = '__all__'
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        if nombre and not nombre.isalpha() and ' ' not in nombre:
+            raise forms.ValidationError("El nombre debe tener solo letras y espacios")
+        
+        return nombre
+
+    def clean_rut(self):
+        rut = self.cleaned_data.get('rut')
+
+        if rut and ' ' in rut:
+            raise forms.ValidationError("El rut no debe contener espacios")
+        
+        return rut
+    
+class VehiculoForm(forms.ModelForm):
+    marca = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Marca'}))
+    patente = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'AA-BB-00'}))
+    descripcion = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descripcion'}))
+    propietario = forms.ModelChoiceField(
+        queryset=Cliente.objects.all(),
+        empty_label="Selecciona Cliente",
+        widget=forms.Select(attrs={'class':'form-select'}),
+        label="Cliente"
+    )
+
+    class Meta:
+        model = Cliente
+        fields = '__all__'
+
+    def clean_patente(self):
+        patente = self.cleaned_data.get('patente')
+
+        if patente and ' ' in patente:
+            raise forms.ValidationError("La patente no debe contener espacios")
+        
+        return patente

@@ -7,5 +7,6 @@ urlpatterns = [
     path('', vista.index,name='index'),
     path('dashboard/', vista.dashboard,name='dashboard'),
     path('clientes/', vista.clientes, name='clientes'),
+    path('eliminar_cliente/<int:cliente_id>', vista.eliminar_cliente, name='eliminar_cliente'),
     path('agendar/', vista.agendar, name='agendar'),
 ]

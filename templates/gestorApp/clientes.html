@@ -10,37 +10,27 @@ de Clientes{% endblock %} {% block css %}<link
   </div>
 
   <!-- Formulario Cliente -->
-  <form class="row g-3">
-    <div class="col-md-6">
-      <label for="inputNombre" class="form-label">Nombre</label>
-      <input type="text" class="form-control" id="inputNombre" />
+  <form class="row g-3" method="POST">
+    {% csrf_token %}
+    <div class="col-md-12">
+      <label for="{{ form.nombreCompleto.label|lower }}" class="form-label">Nombre Completo</label>
+      {{ form.nombreCompleto }}
+      <div id="nombreCompleto_errors">{{ form.nombreCompleto.errors }}</div>
     </div>
     <div class="col-md-6">
-      <label for="inputApellido" class="form-label">Apellido</label>
-      <input type="text" class="form-control" id="inputApellido" />
+      <label for="{{ form.rut.label|lower }}" class="form-label">Rut</label>
+      {{ form.rut }}
+      <div id="rut_errors">{{ form.rut.errors }}</div>
     </div>
     <div class="col-md-6">
-      <label for="inputRut" class="form-label">Rut</label>
-      <input
-        type="text"
-        class="form-control"
-        id="inputRut"
-        placeholder="12345678-9"
-      />
-    </div>
-    <div class="col-md-6">
-      <label for="inputEmail" class="form-label">Email</label>
-      <input
-        type="email"
-        class="form-control"
-        id="inputEmail"
-        placeholder="email@correo.com"
-      />
+      <label for="{{ form.email.label|lower }}" class="form-label">Email</label>
+      {{ form.email }}
+      <div id="email_errors">{{ form.email.errors }}</div>
     </div>
     <div class="col-12">
       <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="agregarVehiculo" />
-        <label class="form-check-label" for="agregarVehiculo">Registrar vehículo inmediatamente</label>
+        {{ form.checked }}
+        <label for="{{ form.checked.label|lower }}" class="form-check-label">Registrar vehículo inmediatamente</label>
       </div>
     </div>
 
@@ -79,14 +69,15 @@ de Clientes{% endblock %} {% block css %}<link
         </textarea>
       </div>
     </div>
-    <div class="col-2">
-      <button type="submit" class="btn btn-primary">Ingresar</button>
+    <div class="col-4">
+      <button type="submit" class="btn btn-primary">Ingresar Cliente</button>
     </div>
-    <div class="col-2">
-      <button type="submit" class="btn btn-warning">Eliminar</button>
+    <div class="col-4">
+      <!-- <a class="btn btn-warning disabled" href="{% url 'eliminar_cliente' 0 %}" role="button" id="btnEliminar">Eliminar Cliente Seleccionado</a> -->
+       <button type="button" class="btn btn-warning disabled" data-url="{% url 'eliminar_cliente' 0 %}" id="btnEliminar">Eliminar Cliente Seleccionado</button>
     </div>
-    <div class="col-8 d-flex justify-content-end">
-      <button type="button" class="btn btn-light border" data-bs-toggle="modal" data-bs-target="#clienteModal">Inspeccionar</button>
+    <div class="col-4 d-flex justify-content-end">
+      <button type="button" class="btn btn-light border disabled" id="btnInspeccionar" data-bs-toggle="modal" data-bs-target="#clienteModal">Inspeccionar Cliente Seleccionado</button>
     </div>
   </form>
 
@@ -95,7 +86,7 @@ de Clientes{% endblock %} {% block css %}<link
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="clienteModalLabel">Cliente</h1>
+          <h1 class="modal-title fs-5 text-center" id="clienteModalLabel">Cliente</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -120,100 +111,49 @@ de Clientes{% endblock %} {% block css %}<link
       <thead>
         <tr>
           <th>Rut</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Num de autos</th>
+          <th>Nombre Completo</th>
+          <th>Autos registrados</th>
         </tr>
       </thead>
       <tbody>
+        {% for cliente in clientes %}
         <tr>
-          <td>1</td>
-          <td>System Architect</td>
-          <td>Edinburgh</td>
+          <td id="{{ cliente.id }}">{{ cliente.rut }}</td>
+          <td>{{ cliente.nombreCompleto }}</td>
           <td>61</td>
         </tr>
-        <tr>
-          <td>2</td>
-          <td>System Architect</td>
-          <td>Edinburgh</td>
-          <td>61</td>
-        </tr>
-        <tr>
-          <td>3</td>
-          <td>System Architect</td>
-          <td>Edinburgh</td>
-          <td>61</td>
-        </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'js/datatables.min.js' %}"></script>
-<script>
-  var getUrlParameter = function getUrlParameter(sParam) {
-    var sPageURL = window.location.search.substring(1),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
-
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
-
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-        }
-    }
-    return false;
-};
-</script>
+<script src="{% static 'js/clientes.js' %}"></script>
 <!-- Script Datatable -->
 <script>
-  var rut = getUrlParameter('rut');
-  if (!rut) {
-    rut = "";
-  } else {
-    // Mostrar Modal al cargar la pagina
-    const myModal = bootstrap.Modal.getOrCreateInstance('#clienteModal');
-    myModal.show();
-  }
+  var rut = getUrlParameter("rut");
+if (!rut) {
+  rut = "";
+} else {
+  // Mostrar Modal al cargar la pagina
+  const myModal = bootstrap.Modal.getOrCreateInstance("#clienteModal");
+  myModal.show();
+}
 
-  $(document).ready(function () {
-    $("#clientsTable").DataTable({language: {
-        url: " {% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
+$(document).ready(function () {
+  $("#clientsTable").DataTable({
+    language: {
+      url: " {% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
     },
     select: {
-        style: 'single',
-        info: false,
+      style: "single",
+      info: false,
     },
     search: {
-        search: rut
-    }
+      search: rut,
+    },
   });
-  });
-</script>
-
-<!-- Script toggle formulario vehiculo -->
-<script>
-  $( "#agregarVehiculo" ).on( "click", function() {
-    $( "#vehiculoCliente" ).toggleClass("d-none");
-} );
-</script>
-
-<!-- Cambiar contenido del Modal -->
-<script>
-  const myModal = document.getElementById('clienteModal');
-  if (myModal) {
-  myModal.addEventListener('show.bs.modal', event => {
-    const recipient = document.getElementsByClassName("selected")[0].children[0].textContent;
-    // Update the modal's content.
-    const modalTitle = myModal.querySelector('.modal-title')
-    // const modalBodyInput = myModal.querySelector('.modal-body input')
-
-    modalTitle.textContent = `Cliente ${recipient}`
-    // modalBodyInput.value = recipient
-    console.log(recipient);
-  })
-}
+});
 </script>
 {% endblock %}
