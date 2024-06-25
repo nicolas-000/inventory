@@ -1,6 +1,11 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from gestorApp import forms
+from gestorApp.forms import AgendaForm
 from gestorApp.models import Agenda, Cliente
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 # Create your views here.
 def index(req):
@@ -47,3 +52,32 @@ def agendar(req):
         
         
     return render(req, 'gestorApp/agenda.html', data)
+
+@csrf_exempt 
+@require_POST
+def eliminarEvent(req):
+    AgendadoId = req.POST.get('event_id')
+    try:
+        evento = Agenda.objects.get(idAgendado=AgendadoId)
+        evento.delete()
+        return JsonResponse({'message': 'Evento eliminado correctamente.'})
+    except Agenda.DoesNotExist:
+        return JsonResponse({'error': 'El evento no existe.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+def modificarEvent(req):
+    AgendadoId = req.POST.get('event_id')
+    start = req.POST.get('start')
+    end = req.POST.get('end')
+    try:
+        evento = Agenda.objects.get(idAgendado=AgendadoId)
+        evento.fechaInicio = start
+        evento.fechaTermino = end
+        evento.save()
+        return JsonResponse({'message': 'Evento modificado correctamente.'})
+    except Agenda.DoesNotExist:
+        return JsonResponse({'error': 'El evento no existe.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
