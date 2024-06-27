@@ -3,6 +3,11 @@
 
 {% block titulo %}Pagina de Inicio{% endblock %}
 
+{% block css %}
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock %}
+
 {% block contenido %}
 <div class="container">
   <div class="row justify-content-center mt-5">
@@ -40,28 +45,46 @@
               </div>
           </div>
       </div>
-  </div>
-</div>
-<table class="table mt-4">
+{% if agendas.exists %}
+<table class="table mt-4 justify-content-center">
     <thead>
         <tr>
             <th>Cliente</th>
-            <th>Fecha</th>
-            <th>Hora</th>
+            <th>Fecha y hora</th>
+            <th>Telefono</th>
+            <th>Tipo de vehiculo</th>
+            <th>Servicio</th>
+            <th>Descripcion</th>
+            <th>Estado</th>
         </tr>
     </thead>
     <tbody>
+    {% for agenda in agendas %}
         <tr>
-            <td>Juan Pérez</td>
-            <td>2024-06-01</td>
-            <td>10:00</td>
+            <td>{{ agenda.nombreAgendado }}</td>
+            <td>{{ agenda.fechaInicio }}</td>
+            <td>{{ agenda.telefono }}</td>
+            {% if agenda.tipoVehiculo == 'VP' %}
+            <td>Vehiculo Particular</td>
+            {% elif agenda.tipoVehiculo == 'MP'%}
+            <td>Maquinaria Pesada</td>
+            {% elif agenda.tipoVehiculo == 'MT'%}
+            <td>Motocicleta</td>
+            {% elif agenda.tipoVehiculo == 'OT'%}
+            <td>Otros</td>
+            {% endif %}
+            <td>{{ agenda.servicioSolicitado }}</td>
+            <td>{{ agenda.descripcion }}</td>
+            {% if agenda.estado == 'C' %}
+            <td>Confirmado</td>
+            {% elif agenda.estado == 'P' %}
+            <td>Pendiente</td>
+            {% endif %}
         </tr>
-        <tr>
-            <td>Maria García</td>
-            <td>2024-06-02</td>
-            <td>11:00</td>
-        </tr>
-        <!-- Agrega más filas según sea necesario -->
+        {% endfor %}
     </tbody>
 </table>
+{% endif %}
+  </div>
+</div>
 {% endblock %}

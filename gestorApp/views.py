@@ -12,7 +12,11 @@ def index(req):
     return render(req, 'gestorApp/index.html')
 
 def dashboard(req):
-    return render(req, 'gestorApp/dashboard.html')
+    agendas = Agenda.objects.all().order_by('fechaInicio')
+    data = {
+        'agendas': agendas,
+    }
+    return render(req, 'gestorApp/dashboard.html',data)
 
 def clientes(req):
     if req.method == 'POST':
