@@ -6,11 +6,11 @@ class Persona(models.Model):
     rut = models.CharField(max_length=13)
 
     def __str__(self):
-        return self.name
+        return self.nombreCompleto
 
 class Cliente(Persona):
     def __str__(self):
-        return self.name
+        return self.nombreCompleto
 
 class Administrativa(Persona):
     password = models.CharField(max_length=200)
@@ -36,9 +36,9 @@ class Agenda(models.Model):
 
 class Vehiculo(models.Model):
     marca = models.CharField(max_length=100)
-    patente = models.CharField(max_length=8)
-    descripcion = models.CharField(max_length=300)
-    propietario = models.ForeignKey(Cliente, on_delete=models.RESTRICT, related_name="vehiculos")
+    patente = models.CharField(max_length=10)
+    descripcion = models.TextField()
+    propietario = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     
     def __str__(self):
         return self.name

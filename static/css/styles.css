@@ -1,61 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f8f9fa;
+  color: #343a40;
+}
+
 #calendar {
     max-width: 900px !important;
-    margin: 40px auto !important;
+    margin: 100px auto !important;
     padding: 0 10px !important;
     background-color: #f9f9f9 !important;
     border-radius: 8px !important;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   }
   
-  .fc .fc-toolbar.fc-header-toolbar {
-    display: flex !important;
-    justify-content: space-between !important;
-    padding: 10px !important;
-  }
-  
-  .fc .fc-toolbar-title {
-    font-size: 1.5em !important;
-    color: #2c3e50 !important;
-  }
-  
-  .fc .fc-button {
-    background-color: #2980b9 !important;
-    border: none !important;
-    color: #fff !important;
-    padding: 5px 10px !important;
-    margin: 0 2px !important;
-    border-radius: 4px !important;
-  }
-  
-  .fc .fc-button:hover {
-    background-color: #3498db !important;
-  }
-  
-  .fc .fc-event {
-    background-color: #3498db !important;
-    border: none !important;
-    border-radius: 4px !important;
-    padding: 5px !important;
-  }
-  
-  .fc .fc-event:hover {
-    background-color: #439cd8 !important;
-  }
-  
- /* Estilos para FullCalendar */
+.fc .fc-toolbar.fc-header-toolbar {
+display: flex !important;
+justify-content: space-between !important;
+padding: 10px !important;
+}
+
+.fc .fc-toolbar-title {
+font-size: 1.5em !important;
+color: #2c3e50 !important;
+}
+
+.fc .fc-button {
+background-color: #2980b9 !important;
+border: none !important;
+color: #fff !important;
+padding: 5px 10px !important;
+margin: 0 2px !important;
+border-radius: 4px !important;
+}
+
+.fc .fc-button:hover {
+background-color: #3498db !important;
+}
+
+.fc .fc-event {
+background-color: #3498db !important;
+border: none !important;
+border-radius: 4px !important;
+padding: 5px !important;
+}
+
+.fc .fc-event:hover {
+background-color: #439cd8 !important;
+}
+
+/* Estilos para FullCalendar */
 .fc-dayGridWeek-day.fc-day,
 .fc-dayGridWeek-day.fc-widget-header {
-  text-decoration: none; /* Elimina el subrayado */
-  color: black ; /* Cambia el color del texto a negro */
+text-decoration: none; /* Elimina el subrayado */
+color: black ; /* Cambia el color del texto a negro */
 }
 
 
-  
+
 .table.mt-4 {
-    width: 900px;
-    margin: 40px auto !important;
-    padding: 0 10px !important;
-    background-color: #f9f9f9 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+margin: 40px auto !important;
+padding: 0 10px !important;
+background-color: #f9f9f9 !important;
+border-radius: 8px !important;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.card-link {
+text-decoration: none;
+}
+
+.card-clickable {
+transition: transform 0.2s, box-shadow 0.2s;
+border: none;
+border-radius: 10px;
+overflow: hidden;
+}
+
+.card-clickable:hover {
+cursor: pointer;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-clickable:active {
+transform: scale(0.95);
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+background: linear-gradient(135deg, #e0e0e0, #ffffff);
+border-radius: 10px;
+padding: 20px;
 }

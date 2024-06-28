@@ -1,5 +1,5 @@
 from django import forms
-from gestorApp.models import Agenda, Cliente
+from gestorApp.models import Agenda, Cliente,Vehiculo
 from gestorApp.choises import estadoReserva, tipoVehiculo  
 
 class AgendaForm(forms.ModelForm):
@@ -45,7 +45,14 @@ class ClienteForm(forms.ModelForm):
 class VehiculoForm(forms.ModelForm):
     marca = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Marca'}))
     patente = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'AA-BB-00'}))
-    descripcion = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Descripcion'}))
+    descripcion = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Descripción', 
+            'rows': 5,  # Número de filas
+            'cols': 40  # Número de columnas
+        })
+    )
     propietario = forms.ModelChoiceField(
         queryset=Cliente.objects.all(),
         empty_label="Selecciona Cliente",
@@ -54,7 +61,7 @@ class VehiculoForm(forms.ModelForm):
     )
 
     class Meta:
-        model = Cliente
+        model = Vehiculo
         fields = '__all__'
 
     def clean_patente(self):

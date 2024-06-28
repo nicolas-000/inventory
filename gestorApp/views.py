@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from gestorApp import forms
-from gestorApp.forms import AgendaForm
-from gestorApp.models import Agenda, Cliente
+from gestorApp.forms import AgendaForm, VehiculoForm
+from gestorApp.models import Agenda, Cliente, Vehiculo
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -39,6 +39,8 @@ def eliminar_cliente(req, cliente_id):
         
     return redirect('clientes')
 
+
+#AGENDA
 def agendar(req):
     if req.method == 'POST':
         form = forms.AgendaForm(req.POST,req.FILES)
@@ -85,3 +87,21 @@ def modificarEvent(req):
         return JsonResponse({'error': 'El evento no existe.'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+#Atenciones
+def atenciones(req):
+    
+    return render(req, 'gestorApp/atenciones.html')
+
+
+# Mantenedor Vehiculo -------------------------------------------------------------------
+def vehiculo_create(request):
+    if request.method == 'POST':
+        form = VehiculoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')  # Redirige a una vista que lista los vehículos, por ejemplo
+    else:
+        form = VehiculoForm()
+    vehiculos = Vehiculo.objects.all()
+    return render(request, 'gestorApp/vehiculo.html', {'form': form, 'vehiculos': vehiculos})
