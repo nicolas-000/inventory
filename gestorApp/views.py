@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from gestorApp import forms
-from gestorApp.forms import AgendaForm, VehiculoForm
-from gestorApp.models import Agenda, Cliente, Vehiculo
+from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm
+from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
@@ -88,20 +88,54 @@ def modificarEvent(req):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
     
-#Atenciones
-def atenciones(req):
     
-    return render(req, 'gestorApp/atenciones.html')
+    
+    
+    
+    
+#Atenciones
+def atenciones(request):
+    if request.method == 'POST':
+        form = AtencionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('atenciones')
+    else:
+        form = AtencionForm()
+
+    atenciones = Atencion.objects.all()
+    return render(request, 'gestorApp/atenciones.html', {'form': form, 'atenciones': atenciones})
+
+
+def get_vehiculos(request, cliente_id):
+    vehiculos = Vehiculo.objects.filter(propietario_id=cliente_id)
+    vehiculos_json = [{"id": vehiculo.id, "nombre": vehiculo.marca} for vehiculo in vehiculos]
+    return JsonResponse({"vehiculos": vehiculos_json})
+
+
+
 
 
 # Mantenedor Vehiculo -------------------------------------------------------------------
-def vehiculo_create(request):
+def vehiculo_create_or_edit(request, vehiculo_id=None):
+    if vehiculo_id:
+        vehiculo = get_object_or_404(Vehiculo, pk=vehiculo_id)
+    else:
+        vehiculo = None
+
     if request.method == 'POST':
-        form = VehiculoForm(request.POST)
+        form = VehiculoForm(request.POST, instance=vehiculo)
         if form.is_valid():
             form.save()
-            return redirect('dashboard')  # Redirige a una vista que lista los vehículos, por ejemplo
+            return redirect('vehiculo_create')  # Redirige a la lista de vehículos
     else:
-        form = VehiculoForm()
-    vehiculos = Vehiculo.objects.all()
+        form = VehiculoForm(instance=vehiculo)
+
+    vehiculos = Vehiculo.objects.all()  # Para mostrar la lista de vehículos registrados
+
     return render(request, 'gestorApp/vehiculo.html', {'form': form, 'vehiculos': vehiculos})
+
+
+
+#BOLETA
+

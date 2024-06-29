@@ -10,3 +10,8 @@ tipoVehiculo = [
     ('MT', 'Motocicleta'),
     ('OT', 'Otros'),
 ]
+
+estadoAtencion = [
+    ('P', 'Pendiente'),
+    ('A', 'Atendida'),
+]

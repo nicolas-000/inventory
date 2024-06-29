@@ -1,6 +1,6 @@
 from django import forms
-from gestorApp.models import Agenda, Cliente,Vehiculo
-from gestorApp.choises import estadoReserva, tipoVehiculo  
+from gestorApp.models import Agenda,Cliente,Vehiculo,Atencion,Repuestos,Boleta
+from gestorApp.choises import estadoReserva, tipoVehiculo,estadoAtencion
 
 class AgendaForm(forms.ModelForm):
     nombreAgendado = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese titulo de reserva'}))
@@ -71,3 +71,38 @@ class VehiculoForm(forms.ModelForm):
             raise forms.ValidationError("La patente no debe contener espacios")
         
         return patente
+    
+class AtencionForm(forms.ModelForm):
+    idPropietario = forms.ModelChoiceField(
+        queryset=Cliente.objects.all(),
+        empty_label="Selecciona Cliente",
+        widget=forms.Select(attrs={'class':'form-select', 'id': 'idPropietario'}),
+        label="Cliente",
+    )
+    fechaInicio = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'Fecha de inicio', 'type': 'date'}))
+    idVehiculo = forms.ModelChoiceField(
+        queryset=Vehiculo.objects.all(),
+        empty_label="Selecciona Vehiculo",
+        widget=forms.Select(attrs={'class':'form-select', 'id': 'idVehiculo'}),
+        label="Vehiculo",
+    )
+    descripcion = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control', 
+            'placeholder': 'Descripción', 
+            'rows': 5,
+            'cols': 40
+        })
+    )
+    estado = forms.ChoiceField(choices=estadoAtencion, widget=forms.Select(attrs={'class': 'form-select'}))
+
+    class Meta:
+        model = Atencion
+        fields = '__all__'
+        
+        
+class RepuestoForm(forms.ModelForm):
+    nombreRepuesto = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Repuesto'}))
+    marca = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Marca del Repuesto'}))
+    tipoRepuesto = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tipo de repuesto'}))
+    costoRepuesto = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Costo del repuesto','min': '0'}))

@@ -1,5 +1,5 @@
 from django.db import models
-from gestorApp.choises import estadoReserva,tipoVehiculo
+from gestorApp.choises import estadoReserva,tipoVehiculo,estadoAtencion
 
 class Persona(models.Model):
     nombreCompleto = models.CharField(max_length=150)
@@ -41,29 +41,34 @@ class Vehiculo(models.Model):
     propietario = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     
     def __str__(self):
-        return self.name
+        return self.marca
 
 class Atencion(models.Model):
-    descripcion = models.CharField(max_length=300)
+    idPropietario = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    idVehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE)
     fechaInicio = models.DateField()
-    fechaTermino = models.DateField()
-    costos = models.PositiveIntegerField()
-    vehiculo = models.ForeignKey(Vehiculo, on_delete=models.CASCADE, related_name="historial")
+    descripcion = models.CharField(max_length=300)
+    estado = models.CharField(max_length=2, choices=estadoAtencion, blank=True, null=True)
 
     def __str__(self):
-        return self.name
+        return f"Atención {self.id} - {self.idPropietario.nombre}"
 
-class Respuestos(models.Model):
+class Repuestos(models.Model):
     nombreRepuesto= models.CharField(max_length=200)
+    atencion = models.ForeignKey(Atencion,on_delete=models.CASCADE)
     marca= models.CharField(max_length=100)
-    tipoRepuesto= models.IntegerField()
     costoRepuesto= models.PositiveIntegerField()
 
     def __str__(self):
         return self.name
     
+
 class Boleta(models.Model):
-    fechaPago: models.DateField()
+    atencion = models.ForeignKey(Atencion, on_delete=models.CASCADE)
+    repuesto = models.ForeignKey(Repuestos,on_delete=models.CASCADE)
+    totalMO = models.PositiveIntegerField()
+    fechaPago = models.DateField()
+    
 
     def __str__(self):
-        return self.name
+        return f"Boleta {self.id} - Atención {self.atencion.id}"
