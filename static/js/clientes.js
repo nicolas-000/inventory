@@ -62,18 +62,17 @@ $("tr").on("click", function () {
 $("#btnEliminar").on("click", function () {
   const cliente_selec =
     document.getElementsByClassName("selected")[0].children[0].id;
-  const url = $(this).attr("data-url").slice(0, -1) + cliente_selec;
+  const url = $(this).attr("data-url").slice(0, -2) + cliente_selec + "/";
 
-  data = {
-    csrfmiddlewaretoken: getCookie("csrftoken"),
-  };
   $.ajax({
     url: url,
     cache: "false",
     dataType: "json",
     method: "POST",
     type: "POST",
-    data: data,
+    data: {
+      csrfmiddlewaretoken: getCookie("csrftoken"),
+    },
     success: function (data) {
       location.reload();
     },
@@ -84,18 +83,38 @@ $("#btnEliminar").on("click", function () {
   return false;
 });
 
-// Cambiar contenido del Modal
+$(document).on("show.bs.modal", "#clienteModal", function() {
+  var recipient = $(".selected").children().attr("id");
 
-const modalCliente = document.getElementById("clienteModal");
-if (modalCliente) {
-  modalCliente.addEventListener("show.bs.modal", (event) => {
-    const recipient =
-      document.getElementsByClassName("selected")[0].children[0].id;
-    // Update the modal's content.
-    const modalTitle = modalCliente.querySelector(".modal-title");
-    // const modalBodyInput = myModal.querySelector('.modal-body input')
+  $("input", this).prop("readonly", true);
+  $("input", this).prop("disabled", true);
+  $("#btnEditarModal").removeClass("d-none");
+  $("#btnGuardarCambiosModal").addClass("d-none");
 
-    modalTitle.textContent = `Cliente ID: ${recipient}`;
-    // modalBodyInput.value = recipient
+  var actionForm = $("#formEditarModal").attr("action").slice(0, -1);
+
+  while (actionForm[actionForm.length-1] != "/") {
+    actionForm = actionForm.slice(0, -1)
+  }
+  
+  actionForm = actionForm + recipient + "/";
+
+  $("#formEditarModal").attr("action", actionForm);
+
+  var modalTitle = $(this).find(".modal-title");
+  modalTitle.text("Cliente ID: " + recipient);
+
+  $.getJSON( actionForm, function( data ) {
+    var campos = data[0].fields;
+    $("#formEditarModal #id_nombreCompleto").val(campos['nombreCompleto']);
+    $("#formEditarModal #id_rut").val(campos['rut']);
+    $("#formEditarModal #id_email").val(campos['email']);
   });
-}
+});
+
+$("#btnEditarModal").on("click", function () {
+  $("#formEditarModal input").prop("readonly", false);
+  $("#formEditarModal input").prop("disabled", false);
+  $("#btnGuardarCambiosModal").removeClass("d-none");
+  $(this).addClass("d-none");
+});

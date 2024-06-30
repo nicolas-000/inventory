@@ -40,32 +40,19 @@ de Clientes{% endblock %} {% block css %}<link
         <h3>Vehículo</h3>
       </div>
       <div class="col-md-6">
-        <label for="inputPatente" class="form-label">Patente</label>
-        <input
-          type="text"
-          class="form-control"
-          id="inputPatente"
-          placeholder="AA-BB-00"
-        />
+        <label for="{{ form.vehiculo_patente.label|lower }}" class="form-label">Patente</label>
+        {{ form.vehiculo_patente }}
+        <div id="vehiculo_patente_errors">{{ form.vehiculo_patente.errors }}</div>
       </div>
       <div class="col-md-6">
-        <label for="inputMarca" class="form-label">Marca</label>
-        <input
-          type="text"
-          class="form-control"
-          id="inputMarca"
-          placeholder="Marca"
-        />
+        <label for="{{ form.vehiculo_marca.label|lower }}" class="form-label">Marca</label>
+        {{ form.vehiculo_marca }}
+        <div id="vehiculo_marca_errors">{{ form.vehiculo_marca.errors }}</div>
       </div>
       <div class="col-md-12 mt-2">
-        <label for="inputDescripcion" class="form-label">Detalles Vehículo</label>
-        <textarea
-          type="text"
-          class="form-control"
-          id="inputDescripcion"
-          placeholder="Descripcion"
-          rows="2"
-        />
+        <label for="{{ form.vehiculo_descripcion.label|lower }}" class="form-label">Descripcion</label>
+        {{ form.vehiculo_descripcion }}
+        <div id="vehiculo_marca_errors">{{ form.vehiculo_descripcion.errors }}</div>
         </textarea>
       </div>
     </div>
@@ -73,7 +60,6 @@ de Clientes{% endblock %} {% block css %}<link
       <button type="submit" class="btn btn-primary">Ingresar Cliente</button>
     </div>
     <div class="col-4">
-      <!-- <a class="btn btn-warning disabled" href="{% url 'eliminar_cliente' 0 %}" role="button" id="btnEliminar">Eliminar Cliente Seleccionado</a> -->
        <button type="button" class="btn btn-warning disabled" data-url="{% url 'eliminar_cliente' 0 %}" id="btnEliminar">Eliminar Cliente Seleccionado</button>
     </div>
     <div class="col-4 d-flex justify-content-end">
@@ -83,19 +69,65 @@ de Clientes{% endblock %} {% block css %}<link
 
   <!-- Modal  -->
   <div class="modal fade" id="clienteModal" tabindex="-1" aria-labelledby="clienteModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
         <div class="modal-header">
           <h1 class="modal-title fs-5 text-center" id="clienteModalLabel">Cliente</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <p>Modal body text goes here.</p>
+          <div class="container">
+            <form action="{% url 'editar_cliente' 0 %}" method="POST" id="formEditarModal">
+              {% csrf_token %}
+              <div class="col-md-12">
+                <label for="{{ form.nombreCompleto.label|lower }}" class="form-label fs-4">Nombre Completo</label>
+                {{ form.nombreCompleto }}
+                <div id="nombreCompleto_errors">{{ form.nombreCompleto.errors }}</div>
+              </div>
+              <div class="col-md-12">
+                <label for="{{ form.rut.label|lower }}" class="form-label fs-4 mt-2">Rut</label>
+                {{ form.rut }}
+                <div id="rut_errors">{{ form.rut.errors }}</div>
+              </div>
+              <div class="col-md-12">
+                <label for="{{ form.email.label|lower }}" class="form-label fs-4 mt-2">Email</label>
+                {{ form.email }}
+                <div id="email_errors">{{ form.email.errors }}</div>
+              </div>
+            <div class="row mt-3 py-2">
+              <div class="col-md-6 border border-3 border-primary-subtle rounded-start-2 overflow-y-auto">
+                <h5 class="py-2">Vehículos</h5>
+                <div class="list-group my-2">
+                  <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1">Marca</h5>
+                      <small class="text-body-secondary">Patente</small>
+                    </div>
+                    <p class="mb-1">Descripcion</p>
+                  </a>
+                </div>
+              </div>
+              <div class="col-md-6 border border-3 border-primary-subtle rounded-end-2 overflow-y-auto">
+                <h5 class="py-2">Ultimas Atenciones</h5>
+                <div class="list-group my-2">
+                  <a href="#" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                      <h5 class="mb-1">Atencion</h5>
+                      <small class="text-body-secondary">Estado</small>
+                    </div>
+                    <p class="mb-1">Descripcion</p>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary" id="btnEditarModal">Editar</button>
+          <button type="submit" class="btn btn-warning d-none" id="btnGuardarCambiosModal">Guardar Cambios</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
+        </form>
       </div>
     </div>
   </div>
@@ -112,7 +144,7 @@ de Clientes{% endblock %} {% block css %}<link
         <tr>
           <th>Rut</th>
           <th>Nombre Completo</th>
-          <th>Autos registrados</th>
+          <th>Vehículos registrados</th>
         </tr>
       </thead>
       <tbody>
@@ -120,7 +152,7 @@ de Clientes{% endblock %} {% block css %}<link
         <tr>
           <td id="{{ cliente.id }}">{{ cliente.rut }}</td>
           <td>{{ cliente.nombreCompleto }}</td>
-          <td>61</td>
+          <td>{{ cliente.num_vehiculos }}</td>
         </tr>
         {% endfor %}
       </tbody>

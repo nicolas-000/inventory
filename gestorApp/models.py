@@ -4,6 +4,7 @@ from gestorApp.choises import estadoReserva,tipoVehiculo,estadoAtencion
 class Persona(models.Model):
     nombreCompleto = models.CharField(max_length=150)
     rut = models.CharField(max_length=13)
+    email = models.CharField(max_length=150, blank=True, null=True)
 
     def __str__(self):
         return self.nombreCompleto

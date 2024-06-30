@@ -1,11 +1,14 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from gestorApp import forms
 from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm
-from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta
-from django.http import JsonResponse
+from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta, Persona
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.db.models import Count
+from django.core import serializers
+
 
 # Create your views here.
 def index(req):
@@ -20,25 +23,42 @@ def dashboard(req):
 
 def clientes(req):
     if req.method == 'POST':
+        checked = req.POST.get('checked')
         form = forms.ClienteForm(req.POST)
-        print(req.POST.get('checked'))
         if form.is_valid():
-            form.save()
+            cliente_id = form.save()
+            if checked == 'on':
+                vehiculo = Vehiculo.objects.create(marca=form.cleaned_data.pop('vehiculo_marca'), patente=form.cleaned_data.pop('vehiculo_patente'), descripcion=form.cleaned_data.pop('vehiculo_descripcion'), propietario=cliente_id) 
             return redirect('clientes')
     else:
         form = forms.ClienteForm()
 
-    return render(req, 'gestorApp/clientes.html', {'form': form, 'clientes': Cliente.objects.all()})
+    clientes = Cliente.objects.all().annotate(num_vehiculos=Count('vehiculo'))
+
+    return render(req, 'gestorApp/clientes.html', {'form': form, 'clientes': clientes})
 
 def eliminar_cliente(req, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
-
     if req.method == 'POST':
         cliente.delete()
-        return redirect('clientes')
-        
-    return redirect('clientes')
+        return JsonResponse({'message': 'Yes!'})
+    return JsonResponse({'message': 'NO!'})
 
+def editar_cliente(req, cliente_id):
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+
+    if req.method == 'POST':
+        form = forms.ClienteForm(req.POST, instance=cliente)
+        if form.is_valid():
+            form.save()
+            return redirect('clientes')
+        else:
+            form = forms.ClienteForm(instance=cliente)
+        return render(req, 'gestorApp/clientes.html', {'form': form, 'clientes': clientes})
+
+    cliente = Persona.objects.filter(id=cliente_id)
+    data = serializers.serialize('json', cliente)
+    return HttpResponse(data, content_type='application/json')
 
 #AGENDA
 def agendar(req):

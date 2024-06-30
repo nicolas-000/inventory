@@ -21,6 +21,9 @@ class ClienteForm(forms.ModelForm):
     rut = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '12345678-9'}))
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'mail@mail.com'}))
     checked = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': 'form-check-input', 'id': 'agregarVehiculo'}), required=False)
+    vehiculo_patente = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'AA-BB-00'}), required=False)
+    vehiculo_marca = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Marca'}), required=False)
+    vehiculo_descripcion = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Descripcion', 'rows': '2'}), required=False)
 
     class Meta:
         model = Cliente
