@@ -1,0 +1,106 @@
+{% extends "gestorApp/base.html" %}
+{% load static %}
+
+{% block titulo %}Pagina de Inicio{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'css/dataTables.bootstrap5.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock %}
+
+{% block contenido %}
+    <div class="container mt-5">
+        <h1>Registrar Atención</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="idPropietario">Cliente:</label>
+                {{ form.idPropietario }}
+                {% for error in form.idPropietario.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="fechaInicio">Fecha de inicio:</label>
+                {{ form.fechaInicio }}
+            </div>
+            <div class="form-group">
+                <label for="idVehiculo">Vehiculo:</label>
+                {{ form.idVehiculo }}
+                {% for error in form.idVehiculo.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="form-group">
+                <label for="descripcion">Descripción:</label>
+                {{ form.descripcion }}
+            </div>
+            <div class="form-group">
+                <label for="estado">Estado:</label>
+                {{ form.estado }}
+            </div>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+        </form>
+
+        <hr>
+
+        <h2>Listado de Atenciones</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Cliente</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Vehículo</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for atencion in atenciones %}
+                <tr>
+                    <td>{{ atencion.id }}</td>
+                    <td>{{ atencion.idPropietario.nombreCompleto }}</td>
+                    <td>{{ atencion.fechaInicio }}</td>
+                    <td>{{ atencion.idVehiculo.marca }}</td>
+                    <td>{{ atencion.descripcion }}</td>
+                    <td>{{ atencion.get_estado_display }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6">No hay atenciones registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <script src="{% static 'js/datatables.min.js' %}"></script>
+    <script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const clienteSelect = document.getElementById('idPropietario');
+        const vehiculoSelect = document.getElementById('idVehiculo');
+    
+        clienteSelect.addEventListener('change', function() {
+            const clienteId = clienteSelect.value;
+            
+            fetch(`/get_vehiculos/${clienteId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    vehiculoSelect.innerHTML = '';
+                    
+                    data.vehiculos.forEach(vehiculo => {
+                        const option = document.createElement('option');
+                        option.value = vehiculo.id;
+                        option.textContent = vehiculo.nombre;
+                        vehiculoSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching vehicles:', error));
+        });
+    });
+</script>
+{% endblock %}

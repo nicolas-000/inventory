@@ -17,7 +17,7 @@ class Administrativa(Persona):
     password = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.name
+        return self.nombreCompleto
 
 class Agenda(models.Model):
     idAgendado = models.AutoField(primary_key=True)
@@ -33,7 +33,7 @@ class Agenda(models.Model):
     fechaActualizacion = models.DateTimeField(auto_now=True)  
 
     def __str__(self):
-        return self.name
+        return self.nombreAgendado
 
 class Vehiculo(models.Model):
     marca = models.CharField(max_length=100)
@@ -61,7 +61,7 @@ class Repuestos(models.Model):
     costoRepuesto= models.PositiveIntegerField()
 
     def __str__(self):
-        return self.name
+        return self.nombreRepuesto
     
 
 class Boleta(models.Model):
@@ -69,7 +69,6 @@ class Boleta(models.Model):
     repuesto = models.ForeignKey(Repuestos,on_delete=models.CASCADE)
     totalMO = models.PositiveIntegerField()
     fechaPago = models.DateField()
-    
 
     def __str__(self):
         return f"Boleta {self.id} - Atención {self.atencion.id}"

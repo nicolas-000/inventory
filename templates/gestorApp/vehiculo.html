@@ -1,0 +1,112 @@
+{% extends "gestorApp/base.html" %}
+{% load static %}
+
+{% block titulo %}Formulario de Vehículo{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid px-auto">
+            <a class="navbar-brand" href="{% url 'dashboard' %}">Inicio</a>
+            <a class="navbar-brand mx-auto h1 fs-1" href="#">Registrar Vehiculo</a>
+        </div>
+    </nav>
+{% endblock %}
+
+{% block css %}
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/lux/bootstrap.min.css">
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link
+  rel="stylesheet"
+  href="{% static 'css/dataTables.bootstrap5.min.css' %}"
+/>
+{% endblock %}
+
+{% block contenido %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h2 class="mb-4">Formulario de Vehículo</h2>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="id_marca">Marca:</label>
+                    {{ form.marca }}
+                    {% for error in form.marca.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group mb-3">
+                    <label for="id_patente">Patente:</label>
+                    {{ form.patente }}
+                    {% for error in form.patente.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group mb-3">
+                    <label for="id_descripcion">Descripción:</label>
+                    {{ form.descripcion }}
+                    {% for error in form.descripcion.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group mb-3">
+                    <label for="id_propietario">Propietario:</label>
+                    {{ form.propietario }}
+                    {% for error in form.propietario.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </form>
+        </div>
+    </div>
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <h2>Vehículos Registrados</h2>
+            <table id="vehiculoTable" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Marca</th>
+                        <th>Patente</th>
+                        <th>Descripción</th>
+                        <th>Propietario</th>
+                        <th>Editar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for vehiculo in vehiculos %}
+                    <tr>
+                        <td>{{ vehiculo.marca }}</td>
+                        <td>{{ vehiculo.patente }}</td>
+                        <td>{{ vehiculo.descripcion }}</td>
+                        <td>{{ vehiculo.propietario.nombreCompleto }}</td>  
+                        <td><a href="{% url 'editar_vehiculo' vehiculo.id %}" class="btn btn-warning">Editar</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'js/datatables.min.js' %}"></script>
+<script src="{% static 'js/clientes.js' %}"></script>
+<!-- Script Datatable -->
+<script>
+    $(document).ready(function () {
+        $("#vehiculoTable").DataTable({
+            responsive: true,
+            language: {
+                url: "{% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
+            },
+            pageLength: 10,  // Mostrar 10 registros por página
+            select: {
+                style: "single",
+                info: false,
+            },
+        });
+    });
+</script>
+{% endblock %}
