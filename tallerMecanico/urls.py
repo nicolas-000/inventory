@@ -18,7 +18,8 @@ urlpatterns = [
     #atenciones
     path('atenciones/', vista.atenciones, name='atenciones'),
     path('get_vehiculos/<int:cliente_id>/', vista.get_vehiculos, name='get_vehiculos'),
-    
+    path('eliminar_atencion/<int:atencion_id>/', vista.eliminar_atencion, name='eliminar_atencion'),
+    path('editar_atencion/<int:atencion_id>/', vista.editar_atencion, name='editar_atencion'),
     
     
     # Vehiculo

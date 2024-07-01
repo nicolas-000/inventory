@@ -62,7 +62,15 @@ $("tr").on("click", function () {
 $("#btnEliminar").on("click", function () {
   const cliente_selec =
     document.getElementsByClassName("selected")[0].children[0].id;
-  const url = $(this).attr("data-url").slice(0, -2) + cliente_selec + "/";
+
+
+    const url = $(this).attr("data-url").slice(0, -1);
+
+  while (url[url.length-1] != "/") {
+    url = url.slice(0, -1)
+  }
+  
+  url = url + cliente_selec + "/";
 
   $.ajax({
     url: url,

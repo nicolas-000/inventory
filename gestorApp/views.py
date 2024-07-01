@@ -129,9 +129,28 @@ def atenciones(request):
 
 def get_vehiculos(request, cliente_id):
     vehiculos = Vehiculo.objects.filter(propietario_id=cliente_id)
-    vehiculos_json = [{"id": vehiculo.id, "nombre": vehiculo.marca} for vehiculo in vehiculos]
+    vehiculos_json = [{"id": vehiculo.id, "patente": vehiculo.patente, 'nombre': vehiculo.marca, 'descripcion': vehiculo.descripcion} for vehiculo in vehiculos]
     return JsonResponse({"vehiculos": vehiculos_json})
 
+def eliminar_atencion(req, atencion_id):
+    atencion = get_object_or_404(Atencion, id=atencion_id)
+
+    if req.method == 'POST':
+        atencion.delete()
+        return JsonResponse({'message': 'Yes!'})
+    return JsonResponse({'message': 'NO!'})
+
+def editar_atencion(req, atencion_id):
+    atencion = get_object_or_404(Atencion, id=atencion_id)
+
+    if req.method == 'POST':
+        form = AtencionForm(req.POST, instance=atencion)
+        if form.is_valid():
+            form.save()
+            return redirect('atenciones')
+    else:
+        form = AtencionForm(instance=atencion)
+    return render(req, 'gestorApp/atenciones.html', {'form': form, 'atenciones': atenciones})
 
 
 
