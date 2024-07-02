@@ -1,9 +1,12 @@
 {% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Gestor
-de Clientes{% endblock %} {% block css %}<link
+de Clientes{% endblock %}
+{% block clientes %}active{% endblock %}
+{% block css %}<link
   rel="stylesheet"
   href="{% static 'css/dataTables.bootstrap5.min.css' %}"
 />
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>{% endblock %} {% block contenido %}
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+{% endblock %} {% block contenido %}
 <div class="container">
   <div class="text-center my-3">
     <h1>Clientes</h1>
@@ -97,7 +100,7 @@ de Clientes{% endblock %} {% block css %}<link
             <div class="row mt-3 py-2">
               <div class="col-md-6 border border-3 border-primary-subtle rounded-start-2 overflow-y-auto">
                 <h5 class="py-2">Vehículos</h5>
-                <div class="list-group my-2">
+                <div class="list-group my-2" id="listaVehiculos" data-url="{% url 'get_vehiculos' 0 %}">
                   <a href="#" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
                       <h5 class="mb-1">Marca</h5>
@@ -167,10 +170,6 @@ de Clientes{% endblock %} {% block css %}<link
   var rut = getUrlParameter("rut");
 if (!rut) {
   rut = "";
-} else {
-  // Mostrar Modal al cargar la pagina
-  const myModal = bootstrap.Modal.getOrCreateInstance("#clienteModal");
-  myModal.show();
 }
 
 $(document).ready(function () {

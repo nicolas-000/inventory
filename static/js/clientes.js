@@ -100,12 +100,18 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
   $("#btnGuardarCambiosModal").addClass("d-none");
 
   var actionForm = $("#formEditarModal").attr("action").slice(0, -1);
+  var urlVehiculos = $("#listaVehiculos").attr("data-url").slice(0, -1);
 
   while (actionForm[actionForm.length-1] != "/") {
     actionForm = actionForm.slice(0, -1)
   }
+
+  while (urlVehiculos[urlVehiculos.length-1] != "/") {
+    urlVehiculos = urlVehiculos.slice(0, -1)
+  }
   
   actionForm = actionForm + recipient + "/";
+  urlVehiculos = urlVehiculos + recipient + "/";
 
   $("#formEditarModal").attr("action", actionForm);
 
@@ -117,6 +123,18 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
     $("#formEditarModal #id_nombreCompleto").val(campos['nombreCompleto']);
     $("#formEditarModal #id_rut").val(campos['rut']);
     $("#formEditarModal #id_email").val(campos['email']);
+  });
+  
+  $.getJSON( urlVehiculos, function( data ) {
+    var i;
+    $("#listaVehiculos").text("");
+    if (data['vehiculos'].length == 0) {
+      $("#listaVehiculos").append("<p>No hay vehículos registrados</p>");
+    } else {
+    for (i = 0; i < data['vehiculos'].length; ++i) {
+        $("#listaVehiculos").append("<a href='#" + data['vehiculos'][i].id + "' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + data['vehiculos'][i].nombre + "</h5><small class='text-body-secondary'>" + data['vehiculos'][i].patente + "</small></div><p class='mb-1'>" + data['vehiculos'][i].descripcion + "</p></a>");
+    }
+  }
   });
 });
 

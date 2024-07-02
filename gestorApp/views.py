@@ -8,12 +8,25 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db.models import Count
 from django.core import serializers
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth import logout
+from xhtml2pdf import pisa
+from django.template.loader import get_template
+from django.conf import settings
+import os
+from datetime import datetime
 
 
 # Create your views here.
 def index(req):
     return render(req, 'gestorApp/index.html')
 
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
+def custom_logout_view(request):
+    logout(request)
+    return redirect('login')
+
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def dashboard(req):
     agendas = Agenda.objects.all().order_by('fechaInicio')
     data = {
@@ -21,6 +34,7 @@ def dashboard(req):
     }
     return render(req, 'gestorApp/dashboard.html',data)
 
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def clientes(req):
     if req.method == 'POST':
         checked = req.POST.get('checked')
@@ -37,6 +51,7 @@ def clientes(req):
 
     return render(req, 'gestorApp/clientes.html', {'form': form, 'clientes': clientes})
 
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def eliminar_cliente(req, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
     if req.method == 'POST':
@@ -44,6 +59,7 @@ def eliminar_cliente(req, cliente_id):
         return JsonResponse({'message': 'Yes!'})
     return JsonResponse({'message': 'NO!'})
 
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def editar_cliente(req, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
 
@@ -61,6 +77,7 @@ def editar_cliente(req, cliente_id):
     return HttpResponse(data, content_type='application/json')
 
 #AGENDA
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def agendar(req):
     if req.method == 'POST':
         form = forms.AgendaForm(req.POST,req.FILES)
@@ -81,6 +98,7 @@ def agendar(req):
 
 @csrf_exempt 
 @require_POST
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def eliminarEvent(req):
     AgendadoId = req.POST.get('event_id')
     try:
@@ -92,7 +110,7 @@ def eliminarEvent(req):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def modificarEvent(req):
     AgendadoId = req.POST.get('event_id')
     start = req.POST.get('start')
@@ -114,6 +132,7 @@ def modificarEvent(req):
     
     
 #Atenciones
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def atenciones(request):
     if request.method == 'POST':
         form = AtencionForm(request.POST)
@@ -126,12 +145,13 @@ def atenciones(request):
     atenciones = Atencion.objects.all()
     return render(request, 'gestorApp/atenciones.html', {'form': form, 'atenciones': atenciones})
 
-
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def get_vehiculos(request, cliente_id):
     vehiculos = Vehiculo.objects.filter(propietario_id=cliente_id)
     vehiculos_json = [{"id": vehiculo.id, "patente": vehiculo.patente, 'nombre': vehiculo.marca, 'descripcion': vehiculo.descripcion} for vehiculo in vehiculos]
     return JsonResponse({"vehiculos": vehiculos_json})
 
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def eliminar_atencion(req, atencion_id):
     atencion = get_object_or_404(Atencion, id=atencion_id)
 
@@ -140,6 +160,7 @@ def eliminar_atencion(req, atencion_id):
         return JsonResponse({'message': 'Yes!'})
     return JsonResponse({'message': 'NO!'})
 
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def editar_atencion(req, atencion_id):
     atencion = get_object_or_404(Atencion, id=atencion_id)
 
@@ -156,6 +177,7 @@ def editar_atencion(req, atencion_id):
 
 
 # Mantenedor Vehiculo -------------------------------------------------------------------
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def vehiculo_create_or_edit(request, vehiculo_id=None):
     if vehiculo_id:
         vehiculo = get_object_or_404(Vehiculo, pk=vehiculo_id)
@@ -174,7 +196,41 @@ def vehiculo_create_or_edit(request, vehiculo_id=None):
 
     return render(request, 'gestorApp/vehiculo.html', {'form': form, 'vehiculos': vehiculos})
 
-
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
+def eliminar_vehiculo(req, vehiculo_id):
+    vehiculo = get_object_or_404(Vehiculo, pk=vehiculo_id)
+    vehiculo.delete()
+    return redirect('vehiculo_create')
 
 #BOLETA
+def render_to_pdf(template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = HttpResponse(content_type='application/pdf')
+    pisa_status = pisa.CreatePDF(html, dest=result)
+    if pisa_status.err:
+        return HttpResponse('We had some errors <pre>' + html + '</pre>')
+    return result
 
+def generate_pdf_view(request, atencion_id):
+    data = get_object_or_404(Atencion, id=atencion_id)
+    context = {'data': str(data)}
+    template = 'gestorApp/boleta.html'
+    pdf = render_to_pdf(template, context)
+
+    # Save the PDF
+    pdf_filename = 'boleta-' + str(datetime.now()) + ".pdf"
+    pdf_path = os.path.join(settings.BOLETA_PDF_DIR, pdf_filename)
+    with open(pdf_path, 'wb') as f:
+        pisa_status = pisa.CreatePDF(pdf.content, dest=f)
+        if pisa_status.err:
+            return HttpResponse('We had some errors <pre>' + pdf.content + '</pre>')
+
+    return HttpResponse(f'PDF generated and saved as {pdf_filename}')
+
+def serve_pdf_view(request, filename):
+    pdf_path = os.path.join(settings.BOLETA_PDF_DIR, filename)
+    if os.path.exists(pdf_path):
+        return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
+    else:
+        raise Http404

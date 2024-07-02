@@ -1,10 +1,31 @@
 from django.db import models
-from gestorApp.choises import estadoReserva,tipoVehiculo,estadoAtencion
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from gestorApp.choises import estadoReserva, tipoVehiculo, estadoAtencion
+
+class CustomUserManager(BaseUserManager):
+    def create_user(self, rut, password=None, **extra_fields):
+        if not rut:
+            raise ValueError("The RUT field must be set")
+        user = self.model(rut=rut, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, rut, password=None, **extra_fields):
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser must have is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser must have is_superuser=True.')
+
+        return self.create_user(rut, password, **extra_fields)
 
 class Persona(models.Model):
     nombreCompleto = models.CharField(max_length=150)
-    rut = models.CharField(max_length=13)
-    email = models.CharField(max_length=150, blank=True, null=True)
+    rut = models.CharField(max_length=13, unique=True)
+    email = models.EmailField(max_length=150, blank=True, null=True)
 
     def __str__(self):
         return self.nombreCompleto
@@ -13,11 +34,23 @@ class Cliente(Persona):
     def __str__(self):
         return self.nombreCompleto
 
-class Administrativa(Persona):
-    password = models.CharField(max_length=200)
+class Administrativa(AbstractBaseUser, PermissionsMixin):
+    nombreCompleto = models.CharField(max_length=150)
+    rut = models.CharField(max_length=13, unique=True)
+    email = models.EmailField(max_length=150, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'rut'
+    REQUIRED_FIELDS = ['nombreCompleto', 'email']
 
     def __str__(self):
         return self.nombreCompleto
+
+    class Meta:
+        permissions = [("acceso_total_app", "Tiene acceso total en la aplicación")]
 
 class Agenda(models.Model):
     idAgendado = models.AutoField(primary_key=True)
@@ -52,7 +85,7 @@ class Atencion(models.Model):
     estado = models.CharField(max_length=2, choices=estadoAtencion, blank=True, null=True)
 
     def __str__(self):
-        return f"Atención {self.id} - {self.idPropietario.nombre}"
+        return f"Atención {self.id} - {self.idPropietario.nombreCompleto}"
 
 class Repuestos(models.Model):
     nombreRepuesto= models.CharField(max_length=200)

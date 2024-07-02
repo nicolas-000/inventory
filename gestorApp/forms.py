@@ -1,6 +1,17 @@
 from django import forms
 from gestorApp.models import Agenda,Cliente,Vehiculo,Atencion,Repuestos,Boleta
 from gestorApp.choises import estadoReserva, tipoVehiculo,estadoAtencion
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import get_user_model
+
+class CustomAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '11111111-1'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '*************'}), label='Contraseña')
+
+    class Meta:
+        model = get_user_model()
+        fields = ['username', 'password']
+
 
 class AgendaForm(forms.ModelForm):
     nombreAgendado = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese titulo de reserva'}))

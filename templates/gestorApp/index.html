@@ -16,8 +16,9 @@
       <div class="col-md-4">
           <div class="card">
               <div class="card-body">
-                  <h2 class="text-center mb-4">Iniciar Sesión</h2>
-                  <form>
+                  <h2 class="text-center mb-4">Inicio de Sesión</h2>
+                  <form method="POST">
+                      {% csrf_token %}
                       <div class="mb-3">
                           <label for="username" class="form-label">Rut:</label>
                           <input type="text" class="form-control" id="rut" name="rut" required>
@@ -27,13 +28,18 @@
                           <input type="password" class="form-control" id="password" name="password" required>
                       </div>
                       <div class="row">
-                          <div class="d-grid col-6">
-                              <a href="{% url 'dashboard' %}"><button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button></a>
+                          <div class="d-grid col-12 mt-3">
+                              <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
                           </div>
                           <div class="col-6">
-                              <button type="submit" class="btn btn-danger btn-block">Salir</button>
+                              <!-- <button type="submit" class="btn btn-danger btn-block">Salir</button> -->
                           </div>
                       </div>
+                  </form>
+                  <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Login</button>
                   </form>
               </div>
           </div>
