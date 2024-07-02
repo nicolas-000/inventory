@@ -173,7 +173,11 @@ def editar_atencion(req, atencion_id):
         form = AtencionForm(instance=atencion)
     return render(req, 'gestorApp/atenciones.html', {'form': form, 'atenciones': atenciones})
 
-
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
+def get_atenciones(request, cliente_id):
+    atenciones = Atencion.objects.filter(idPropietario=cliente_id)
+    atenciones_json = [{"id": atencion.id, "fechaInicio": atencion.fechaInicio, 'estado': atencion.estado, 'descripcion': atencion.descripcion} for atencion in atenciones]
+    return JsonResponse({"atenciones": atenciones_json})
 
 
 # Mantenedor Vehiculo -------------------------------------------------------------------

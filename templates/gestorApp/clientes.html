@@ -112,7 +112,7 @@ de Clientes{% endblock %}
               </div>
               <div class="col-md-6 border border-3 border-primary-subtle rounded-end-2 overflow-y-auto">
                 <h5 class="py-2">Ultimas Atenciones</h5>
-                <div class="list-group my-2">
+                <div class="list-group my-2" id="listaAtenciones" data-url="{% url 'get_atenciones' 0 %}">
                   <a href="#" class="list-group-item list-group-item-action">
                     <div class="d-flex w-100 justify-content-between">
                       <h5 class="mb-1">Atencion</h5>

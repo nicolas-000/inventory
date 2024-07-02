@@ -101,6 +101,7 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
 
   var actionForm = $("#formEditarModal").attr("action").slice(0, -1);
   var urlVehiculos = $("#listaVehiculos").attr("data-url").slice(0, -1);
+  var urlAtenciones = $("#listaAtenciones").attr("data-url").slice(0, -1);
 
   while (actionForm[actionForm.length-1] != "/") {
     actionForm = actionForm.slice(0, -1)
@@ -109,9 +110,14 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
   while (urlVehiculos[urlVehiculos.length-1] != "/") {
     urlVehiculos = urlVehiculos.slice(0, -1)
   }
+
+  while (urlAtenciones[urlAtenciones.length-1] != "/") {
+    urlAtenciones = urlAtenciones.slice(0, -1)
+  }
   
   actionForm = actionForm + recipient + "/";
   urlVehiculos = urlVehiculos + recipient + "/";
+  urlAtenciones = urlAtenciones + recipient + "/";
 
   $("#formEditarModal").attr("action", actionForm);
 
@@ -132,7 +138,23 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
       $("#listaVehiculos").append("<p>No hay vehículos registrados</p>");
     } else {
     for (i = 0; i < data['vehiculos'].length; ++i) {
-        $("#listaVehiculos").append("<a href='#" + data['vehiculos'][i].id + "' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + data['vehiculos'][i].nombre + "</h5><small class='text-body-secondary'>" + data['vehiculos'][i].patente + "</small></div><p class='mb-1'>" + data['vehiculos'][i].descripcion + "</p></a>");
+        $("#listaVehiculos").append("<a href='#' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + data['vehiculos'][i].nombre + "</h5><small class='text-body-secondary'>" + data['vehiculos'][i].patente + "</small></div><p class='mb-1'>" + data['vehiculos'][i].descripcion + "</p></a>");
+    }
+  }
+  });
+
+  $.getJSON( urlAtenciones, function( data ) {
+    var i;
+    $("#listaAtenciones").text("");
+    if (data['atenciones'].length == 0) {
+      $("#listaAtenciones").append("<p>No hay atenciones registrados</p>");
+    } else {
+    for (i = 0; i < data['atenciones'].length; ++i) {
+        if (data['atenciones'][i].estado == "P") { var estado = "Pendiente"; } else { var estado = "Atendida"; }
+        var fechaMal = data['atenciones'][i].fechaInicio.split('-');
+        var fecha = fechaMal[2] + '-' + fechaMal[1] + '-' + fechaMal[0];
+        console.log(fecha);
+        $("#listaAtenciones").append("<a href='#' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + fecha + "</h5><small class='text-body-secondary'>" + estado + "</small></div><p class='mb-1'>" + data['atenciones'][i].descripcion + "</p></a>");
     }
   }
   });
