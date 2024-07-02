@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from gestorApp import forms
-from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm
+from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm,RepuestoForm
 from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta, Persona
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
@@ -151,14 +151,14 @@ def get_vehiculos(request, cliente_id):
     vehiculos_json = [{"id": vehiculo.id, "patente": vehiculo.patente, 'nombre': vehiculo.marca, 'descripcion': vehiculo.descripcion} for vehiculo in vehiculos]
     return JsonResponse({"vehiculos": vehiculos_json})
 
-@permission_required("gestorApp.acceso_total_app", raise_exception=True)
-def eliminar_atencion(req, atencion_id):
-    atencion = get_object_or_404(Atencion, id=atencion_id)
 
-    if req.method == 'POST':
-        atencion.delete()
-        return JsonResponse({'message': 'Yes!'})
-    return JsonResponse({'message': 'NO!'})
+def cargar_editar_atencion(req, atencion_id):
+    atencion = get_object_or_404(Atencion, id=atencion_id)
+    form = AtencionForm(instance=atencion)  
+      
+    return render(req, 'gestorApp/modificarAtencion.html', {'form': form, 'atencion': atencion})
+
+
 
 @permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def editar_atencion(req, atencion_id):
@@ -168,10 +168,11 @@ def editar_atencion(req, atencion_id):
         form = AtencionForm(req.POST, instance=atencion)
         if form.is_valid():
             form.save()
-            return redirect('atenciones')
+            return redirect('atenciones')  # Asegúrate de que 'atenciones' sea el nombre correcto de la vista a la que quieres redirigir
     else:
         form = AtencionForm(instance=atencion)
-    return render(req, 'gestorApp/atenciones.html', {'form': form, 'atenciones': atenciones})
+    
+    return render(req, 'gestorApp/editar_atencion.html', {'form': form, 'atencion': atencion})
 
 @permission_required("gestorApp.acceso_total_app", raise_exception=True)
 def get_atenciones(request, cliente_id):
@@ -205,6 +206,30 @@ def eliminar_vehiculo(req, vehiculo_id):
     vehiculo = get_object_or_404(Vehiculo, pk=vehiculo_id)
     vehiculo.delete()
     return redirect('vehiculo_create')
+
+
+@permission_required("gestorApp.acceso_total_app", raise_exception=True)
+def agregar_repuesto(request, atencion_id):
+    atencion = get_object_or_404(Atencion, pk=atencion_id)
+    repuestos = Repuestos.objects.filter(atencion=atencion)
+
+    if request.method == "POST":
+        form = RepuestoForm(request.POST)
+        if form.is_valid():
+            nuevo_repuesto = form.save(commit=False)
+            nuevo_repuesto.atencion = atencion
+            nuevo_repuesto.save()
+            return redirect('agregar_repuesto', atencion_id=atencion.id)
+    else:
+        form = RepuestoForm()
+
+    return render(request, 'gestorApp/agregar_repuesto.html', {
+        'atencion': atencion,
+        'form': form,
+        'repuestos': repuestos
+    })
+
+
 
 #BOLETA
 def render_to_pdf(template_src, context_dict={}):

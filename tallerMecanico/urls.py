@@ -22,10 +22,13 @@ urlpatterns = [
     #atenciones
     path('atenciones/', vista.atenciones, name='atenciones'),
     path('get_vehiculos/<int:cliente_id>/', vista.get_vehiculos, name='get_vehiculos'),
-    path('eliminar_atencion/<int:atencion_id>/', vista.eliminar_atencion, name='eliminar_atencion'),
+    path('atencionEdit/<int:atencion_id>/', vista.cargar_editar_atencion, name='modificarAtencion'),
     path('editar_atencion/<int:atencion_id>/', vista.editar_atencion, name='editar_atencion'),
-
     path('get_atenciones/<int:cliente_id>/', vista.get_atenciones, name='get_atenciones'),
+    
+    #repuestos
+    path('atencion/<int:atencion_id>/repuestos/agregar/', vista.agregar_repuesto, name='agregar_repuesto'),
+
     
     # Vehiculo
     path('vehiculo/', vista.vehiculo_create_or_edit, name='vehiculo_create'),

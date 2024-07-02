@@ -1,0 +1,36 @@
+{% extends "gestorApp/base.html" %}
+{% load static %}
+
+{% block titulo %}Repuestos para Atención {{ atencion.id }}{% endblock %}
+{% block css %}
+<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'css/dataTables.bootstrap5.min.css' %}"/>
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% endblock %}
+
+{% block contenido %}
+    <div class="container mt-5">
+        <h1>Repuestos para Atención {{ atencion.id }}</h1>
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Marca</th>
+                    <th>Costo</th>
+                    <th>Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for repuesto in repuestos %}
+                <tr>
+                    <td>{{ repuesto.nombreRepuesto }}</td>
+                    <td>{{ repuesto.marca }}</td>
+                    <td>{{ repuesto.costoRepuesto }}</td>
+                    <td>{{ repuesto.cantidad }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'agregar_repuesto' atencion.id %}" class="btn btn-primary">Agregar Repuesto</a>
+    </div>
+{% endblock %}

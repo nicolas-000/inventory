@@ -42,10 +42,9 @@
             </div>
             <div class="row">
                 <div class="col-3">
-                <button type="submit" class="btn btn-primary my-3">Guardar</button>
-                </div><div class="col-3">
-                    <a data-url="{% url 'eliminar_atencion' 0 %}" type="button" class="btn btn-warning my-3 disabled" id="btnEliminar">Eliminar</a>
-                </div><div class="col-3">
+                    <button type="submit" class="btn btn-primary my-3">Guardar</button>
+                </div>
+                <div class="col-3">
                     <a data-url="{% url 'editar_atencion' 0 %}" type="button" class="btn btn-light border my-3 disabled" id="btnEditar">Editar</a>
                 </div>
                 <div class="col-3 d-flex justify-content-end">
@@ -66,6 +65,7 @@
                     <th>Vehículo</th>
                     <th>Descripción</th>
                     <th>Estado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +77,10 @@
                     <td>{{ atencion.idVehiculo.marca }}</td>
                     <td>{{ atencion.descripcion }}</td>
                     <td>{{ atencion.get_estado_display }}</td>
+                    <td class="d-flex justify-content-between">
+                        <a href="{% url 'modificarAtencion' atencion.id %}" class="btn btn-warning">Editar</a>
+                        <a href="{% url 'agregar_repuesto' atencion.id %}" class="btn btn-info">Agregar Repuestos</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -111,131 +115,17 @@
     });
 
     $(document).ready(function () {
-    $("#atencionTable").DataTable({
-        language: {
-        url: " {% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
-        },
-        select: {
-        style: "single",
-        info: false,
-        },
+        $("#atencionTable").DataTable({
+            language: {
+                url: "{% static 'locale/datatables-plug-ins-2.0.8-i18n-es-CL.json' %}",
+            },
+            select: {
+                style: "single",
+                info: false,
+            },
+        });
     });
-    $("#atencionTable tr").on("click", function() {
-        var urlEliminar = $("#btnEliminar").attr("data-url").slice(0, -1);
-
-        while (urlEliminar[urlEliminar.length-1] != "/") {
-            urlEliminar = urlEliminar.slice(0, -1);
-        }
-        
-        urlEliminar = urlEliminar + $(this).children()[0].innerHTML + "/";
-
-        $("#btnEliminar").attr("data-url", urlEliminar);
-
-        var urlEditar = $("#btnEditar").attr("data-url").slice(0, -1);
-
-        while (urlEditar[urlEditar.length-1] != "/") {
-            urlEditar = urlEditar.slice(0, -1);
-        }
-        
-        urlEditar = urlEditar + $(this).children()[0].innerHTML + "/";
-
-        $("#btnEditar").attr("data-url", urlEditar);
-
-        var urlBoleta = $("#btnBoleta").attr("data-url").slice(0, -1);
-
-        while (urlBoleta[urlBoleta.length-1] != "/") {
-            urlBoleta = urlBoleta.slice(0, -1);
-        }
-        
-        urlBoleta = urlBoleta + $(this).children()[0].innerHTML + "/";
-
-        $("#btnBoleta").attr("data-url", urlBoleta);
-
-        if ($(this).hasClass("selected")) {
-            $("#btnEliminar").addClass("disabled");
-            $("#btnEditar").addClass("disabled");
-            $("#btnBoleta").addClass("disabled");
-        } else {
-            $("#btnEliminar").removeClass("disabled");
-            $("#btnEditar").removeClass("disabled");
-            $("#btnBoleta").removeClass("disabled");
-        }
-    });
-    });
-
-    function getCookie(name) {
-  var cookieValue = null;
-  if (document.cookie && document.cookie != "") {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) == name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-
-    $("#btnEliminar").on("click", function () {
-  $.ajax({
-    url: $(this).attr("data-url"),
-    cache: "false",
-    dataType: "json",
-    method: "POST",
-    type: "POST",
-    data: {
-      csrfmiddlewaretoken: getCookie("csrftoken"),
-    },
-    success: function (data) {
-      location.reload();
-    },
-    error: function (data) {
-      location.reload();
-    },
-  });
-  return false;});
-
-  $("#btnEditar").on("click", function () {
-  $.ajax({
-    url: $(this).attr("data-url"),
-    cache: "false",
-    dataType: "json",
-    method: "POST",
-    type: "POST",
-    data: {
-      csrfmiddlewaretoken: getCookie("csrftoken"),
-    },
-    success: function (data) {
-      location.reload();
-    },
-    error: function (data) {
-      location.reload();
-    },
-  });
-  return false;
-});
-
-$("#btnBoleta").on("click", function () {
-  $.ajax({
-    url: $(this).attr("data-url"),
-    cache: "false",
-    dataType: "json",
-    method: "POST",
-    type: "POST",
-    data: {
-      csrfmiddlewaretoken: getCookie("csrftoken"),
-    },
-    success: function (data) {
-      location.reload();
-    },
-    error: function (data) {
-      location.reload();
-    },
-  });
-  return false;
-});
 </script>
+
 {% endblock %}
+  

@@ -116,7 +116,12 @@ class AtencionForm(forms.ModelForm):
         
         
 class RepuestoForm(forms.ModelForm):
-    nombreRepuesto = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Repuesto'}))
-    marca = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Marca del Repuesto'}))
-    tipoRepuesto = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Tipo de repuesto'}))
-    costoRepuesto = forms.IntegerField(widget=forms.NumberInput(attrs={'class': 'form-control','placeholder': 'Costo del repuesto','min': '0'}))
+    class Meta:
+        model = Repuestos
+        fields = ['nombreRepuesto', 'marca', 'costoRepuesto','cantidad']
+        widgets = {
+            'nombreRepuesto': forms.TextInput(attrs={'class': 'form-control'}),
+            'marca': forms.TextInput(attrs={'class': 'form-control'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control'}),
+            'costoRepuesto': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

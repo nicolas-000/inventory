@@ -88,18 +88,20 @@ class Atencion(models.Model):
         return f"Atención {self.id} - {self.idPropietario.nombreCompleto}"
 
 class Repuestos(models.Model):
-    nombreRepuesto= models.CharField(max_length=200)
-    atencion = models.ForeignKey(Atencion,on_delete=models.CASCADE)
-    marca= models.CharField(max_length=100)
-    costoRepuesto= models.PositiveIntegerField()
+    atencion = models.ForeignKey(Atencion, on_delete=models.CASCADE, related_name='repuestos')
+    nombreRepuesto = models.CharField(max_length=100)
+    marca = models.CharField(max_length=100)
+    costoRepuesto = models.DecimalField(max_digits=10, decimal_places=2)
+    cantidad = models.PositiveIntegerField(default=1)  # Agregar este campo
 
     def __str__(self):
-        return self.nombreRepuesto
+        return f"{self.nombreRepuesto} - {self.marca}"
     
 
 class Boleta(models.Model):
     atencion = models.ForeignKey(Atencion, on_delete=models.CASCADE)
     repuesto = models.ForeignKey(Repuestos,on_delete=models.CASCADE)
+    subTotal = models.PositiveIntegerField()
     totalMO = models.PositiveIntegerField()
     fechaPago = models.DateField()
 
