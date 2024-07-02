@@ -37,4 +37,10 @@ urlpatterns = [
 
     path('generate_pdf/<int:atencion_id>/', vista.generate_pdf_view, name='generate_pdf'),
     path('pdfs/<str:filename>/', vista.serve_pdf_view, name='serve_pdf'),
+    
+    #Boleta
+    path('atenciones/<int:atencion_id>/boleta/generar/', vista.generar_boleta, name='generar_boleta'),
+    path('atenciones/<int:atencion_id>/boleta/detalle/', vista.detalle_boleta, name='detalle_boleta'),
+    path('generar_pdf_boleta/<int:atencion_id>/', vista.generar_pdf_boleta, name='generar_pdf_boleta'),
 ]
+

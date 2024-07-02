@@ -1,9 +1,14 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from gestorApp import forms
-from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm,RepuestoForm
-from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta, Persona
+from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm,RepuestoForm,BoletaForm
+from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta, Persona, Boleta
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, landscape
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Frame, PageTemplate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db.models import Count
@@ -228,7 +233,137 @@ def agregar_repuesto(request, atencion_id):
         'form': form,
         'repuestos': repuestos
     })
+#boleta 2.0
+def generar_boleta(request, atencion_id):
+    atencion = get_object_or_404(Atencion, id=atencion_id)
+    repuestos = Repuestos.objects.filter(atencion=atencion)
+    
+    subtotal = sum(repuesto.costoRepuesto * repuesto.cantidad for repuesto in repuestos)
+    
+    if request.method == 'POST':
+        form = BoletaForm(request.POST)
+        if form.is_valid():
+            boleta = form.save(commit=False)
+            boleta.atencion = atencion
+            boleta.subtotal = subtotal
+            boleta.total = boleta.totalMO + subtotal
+            boleta.save()
+            return redirect('detalle_boleta', boleta.id)
+    else:
+        form = BoletaForm()
 
+    context = {
+        'atencion': atencion,
+        'repuestos': repuestos,
+        'subtotal': subtotal,
+        'form': form
+    }
+    return render(request, 'gestorApp/generar_boleta.html', context)
+
+def detalle_boleta(request, atencion_id):
+    atencion = get_object_or_404(Atencion, pk=atencion_id)
+    boleta = get_object_or_404(Boleta, atencion=atencion)
+    repuestos = Repuestos.objects.filter(atencion=atencion)
+    
+    return render(request, 'gestorApp/detalle_boleta.html', {
+        'atencion': atencion,
+        'boleta': boleta,
+        'repuestos': repuestos
+    })
+def generar_pdf_boleta(request, atencion_id):
+    boleta = get_object_or_404(Boleta, atencion_id=atencion_id)
+    repuestos = Repuestos.objects.filter(atencion_id=atencion_id)
+
+    # Calcular el subtotal sumando el costo de cada repuesto multiplicado por su cantidad
+    subtotal = sum(repuesto.costoRepuesto * repuesto.cantidad for repuesto in repuestos)
+    total = subtotal + boleta.totalMO
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="boleta_{boleta.atencion.id}.pdf"'
+
+    # Create PDF document in landscape mode
+    doc = SimpleDocTemplate(response, pagesize=landscape(letter))
+    styles = getSampleStyleSheet()
+    elements = []
+
+    title = Paragraph(f'Boleta de Atención: {boleta.atencion.id}', styles['Title'])
+    elements.append(title)
+
+    cliente_info = [
+        ['Cliente:', boleta.atencion.idPropietario.nombreCompleto],
+        ['Vehículo:', boleta.atencion.idVehiculo.marca],
+        ['Descripción:', boleta.atencion.descripcion],
+        ['Fecha de Atención:', boleta.atencion.fechaInicio.strftime('%d/%m/%Y')],
+    ]
+    table = Table(cliente_info, hAlign='LEFT', colWidths=[150, 350])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 12))
+
+    boleta_info = [
+        ['Subtotal:', f'${subtotal:.2f}'],
+        ['Costo Mano de Obra:', f'${boleta.totalMO:.2f}'],
+        ['Total:', f'${total:.2f}'],
+    ]
+    table = Table(boleta_info, hAlign='LEFT', colWidths=[150, 350])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(table)
+    elements.append(Spacer(1, 12))
+
+    repuestos_info = [[
+        'Nombre', 'Marca', 'Costo', 'Cantidad', 'Total'
+    ]] + [
+        [repuesto.nombreRepuesto, repuesto.marca, f'${repuesto.costoRepuesto:.2f}', repuesto.cantidad, f'${repuesto.costoRepuesto * repuesto.cantidad:.2f}']
+        for repuesto in repuestos
+    ]
+    table = Table(repuestos_info, hAlign='LEFT', colWidths=[150, 150, 100, 100, 100])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    elements.append(table)
+
+    # Handle pagination
+    def on_first_page(canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Helvetica', 12)
+        canvas.drawString(100, 580, 'Taller Mecanico Familia Callejas')
+        canvas.restoreState()
+
+    def on_later_pages(canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Helvetica', 12)
+        canvas.drawString(100, 580, 'Taller Mecanico Familia Callejas')
+        canvas.restoreState()
+
+    frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height - 2 * doc.bottomMargin, id='normal')
+    template = PageTemplate(id='test', frames=[frame], onPage=on_first_page, onPageEnd=on_later_pages)
+    doc.addPageTemplates([template])
+
+    doc.build(elements)
+
+    return response
 
 
 #BOLETA

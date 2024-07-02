@@ -99,11 +99,8 @@ class Repuestos(models.Model):
     
 
 class Boleta(models.Model):
-    atencion = models.ForeignKey(Atencion, on_delete=models.CASCADE)
-    repuesto = models.ForeignKey(Repuestos,on_delete=models.CASCADE)
-    subTotal = models.PositiveIntegerField()
-    totalMO = models.PositiveIntegerField()
-    fechaPago = models.DateField()
-
-    def __str__(self):
-        return f"Boleta {self.id} - Atención {self.atencion.id}"
+    atencion = models.OneToOneField(Atencion, on_delete=models.CASCADE)
+    totalMO = models.DecimalField(max_digits=10, decimal_places=2)  # Mano de obra
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    fechaPago = models.DateField(auto_now_add=True)

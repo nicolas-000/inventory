@@ -125,3 +125,11 @@ class RepuestoForm(forms.ModelForm):
             'cantidad': forms.NumberInput(attrs={'class': 'form-control'}),
             'costoRepuesto': forms.NumberInput(attrs={'class': 'form-control'}),
         }
+
+class BoletaForm(forms.ModelForm):
+    class Meta:
+        model = Boleta
+        fields = ['totalMO']
+        labels = {
+            'totalMO': 'Costo Mano de Obra',
+        }
