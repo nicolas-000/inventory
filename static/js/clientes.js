@@ -58,40 +58,41 @@ $("tr").on("click", function () {
 });
 
 // Script actualizar btn eliminar
+$(document).ready(function () {
+  $("#btnEliminar").on("click", function () {
+    const cliente_selec =
+      document.getElementsByClassName("selected")[0].children[0].id;
 
-$("#btnEliminar").on("click", function () {
-  const cliente_selec =
-    document.getElementsByClassName("selected")[0].children[0].id;
+    var url = $("#btnEliminar").attr("data-url").slice(0, -1);
 
+    console.log(url);
+    while (url[url.length - 1] != "/") {
+      url = url.slice(0, -1);
+    }
 
-    const url = $(this).attr("data-url").slice(0, -1);
+    url = url + cliente_selec + "/";
 
-  while (url[url.length-1] != "/") {
-    url = url.slice(0, -1)
-  }
-  
-  url = url + cliente_selec + "/";
-
-  $.ajax({
-    url: url,
-    cache: "false",
-    dataType: "json",
-    method: "POST",
-    type: "POST",
-    data: {
-      csrfmiddlewaretoken: getCookie("csrftoken"),
-    },
-    success: function (data) {
-      location.reload();
-    },
-    error: function (data) {
-      location.reload();
-    },
+    $.ajax({
+      url: url,
+      cache: "false",
+      dataType: "json",
+      method: "POST",
+      type: "POST",
+      data: {
+        csrfmiddlewaretoken: getCookie("csrftoken"),
+      },
+      success: function (data) {
+        location.reload();
+      },
+      error: function (data) {
+        location.reload();
+      },
+    });
+    return false;
   });
-  return false;
 });
 
-$(document).on("show.bs.modal", "#clienteModal", function() {
+$(document).on("show.bs.modal", "#clienteModal", function () {
   var recipient = $(".selected").children().attr("id");
 
   $("input", this).prop("readonly", true);
@@ -103,18 +104,18 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
   var urlVehiculos = $("#listaVehiculos").attr("data-url").slice(0, -1);
   var urlAtenciones = $("#listaAtenciones").attr("data-url").slice(0, -1);
 
-  while (actionForm[actionForm.length-1] != "/") {
-    actionForm = actionForm.slice(0, -1)
+  while (actionForm[actionForm.length - 1] != "/") {
+    actionForm = actionForm.slice(0, -1);
   }
 
-  while (urlVehiculos[urlVehiculos.length-1] != "/") {
-    urlVehiculos = urlVehiculos.slice(0, -1)
+  while (urlVehiculos[urlVehiculos.length - 1] != "/") {
+    urlVehiculos = urlVehiculos.slice(0, -1);
   }
 
-  while (urlAtenciones[urlAtenciones.length-1] != "/") {
-    urlAtenciones = urlAtenciones.slice(0, -1)
+  while (urlAtenciones[urlAtenciones.length - 1] != "/") {
+    urlAtenciones = urlAtenciones.slice(0, -1);
   }
-  
+
   actionForm = actionForm + recipient + "/";
   urlVehiculos = urlVehiculos + recipient + "/";
   urlAtenciones = urlAtenciones + recipient + "/";
@@ -124,39 +125,59 @@ $(document).on("show.bs.modal", "#clienteModal", function() {
   var modalTitle = $(this).find(".modal-title");
   modalTitle.text("Cliente ID: " + recipient);
 
-  $.getJSON( actionForm, function( data ) {
+  $.getJSON(actionForm, function (data) {
     var campos = data[0].fields;
-    $("#formEditarModal #id_nombreCompleto").val(campos['nombreCompleto']);
-    $("#formEditarModal #id_rut").val(campos['rut']);
-    $("#formEditarModal #id_email").val(campos['email']);
-  });
-  
-  $.getJSON( urlVehiculos, function( data ) {
-    var i;
-    $("#listaVehiculos").text("");
-    if (data['vehiculos'].length == 0) {
-      $("#listaVehiculos").append("<p>No hay vehículos registrados</p>");
-    } else {
-    for (i = 0; i < data['vehiculos'].length; ++i) {
-        $("#listaVehiculos").append("<a href='#' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + data['vehiculos'][i].nombre + "</h5><small class='text-body-secondary'>" + data['vehiculos'][i].patente + "</small></div><p class='mb-1'>" + data['vehiculos'][i].descripcion + "</p></a>");
-    }
-  }
+    $("#formEditarModal #id_nombreCompleto").val(campos["nombreCompleto"]);
+    $("#formEditarModal #id_rut").val(campos["rut"]);
+    $("#formEditarModal #id_email").val(campos["email"]);
   });
 
-  $.getJSON( urlAtenciones, function( data ) {
+  $.getJSON(urlVehiculos, function (data) {
+    var i;
+    $("#listaVehiculos").text("");
+    if (data["vehiculos"].length == 0) {
+      $("#listaVehiculos").append("<p>No hay vehículos registrados</p>");
+    } else {
+      for (i = 0; i < data["vehiculos"].length; ++i) {
+        $("#listaVehiculos").append(
+          "<a href='#' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" +
+            data["vehiculos"][i].nombre +
+            "</h5><small class='text-body-secondary'>" +
+            data["vehiculos"][i].patente +
+            "</small></div><p class='mb-1'>" +
+            data["vehiculos"][i].descripcion +
+            "</p></a>"
+        );
+      }
+    }
+  });
+
+  $.getJSON(urlAtenciones, function (data) {
     var i;
     $("#listaAtenciones").text("");
-    if (data['atenciones'].length == 0) {
+    if (data["atenciones"].length == 0) {
       $("#listaAtenciones").append("<p>No hay atenciones registrados</p>");
     } else {
-    for (i = 0; i < data['atenciones'].length; ++i) {
-        if (data['atenciones'][i].estado == "P") { var estado = "Pendiente"; } else { var estado = "Atendida"; }
-        var fechaMal = data['atenciones'][i].fechaInicio.split('-');
-        var fecha = fechaMal[2] + '-' + fechaMal[1] + '-' + fechaMal[0];
+      for (i = 0; i < data["atenciones"].length; ++i) {
+        if (data["atenciones"][i].estado == "P") {
+          var estado = "Pendiente";
+        } else {
+          var estado = "Atendida";
+        }
+        var fechaMal = data["atenciones"][i].fechaInicio.split("-");
+        var fecha = fechaMal[2] + "-" + fechaMal[1] + "-" + fechaMal[0];
         console.log(fecha);
-        $("#listaAtenciones").append("<a href='#' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" + fecha + "</h5><small class='text-body-secondary'>" + estado + "</small></div><p class='mb-1'>" + data['atenciones'][i].descripcion + "</p></a>");
+        $("#listaAtenciones").append(
+          "<a href='#' class='list-group-item list-group-item-action'><div class='d-flex w-100 justify-content-between'><h5 class='mb-1'>" +
+            fecha +
+            "</h5><small class='text-body-secondary'>" +
+            estado +
+            "</small></div><p class='mb-1'>" +
+            data["atenciones"][i].descripcion +
+            "</p></a>"
+        );
+      }
     }
-  }
   });
 });
 
