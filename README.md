@@ -10,12 +10,12 @@ Python >= 3.11
 `$ python manage.py makemigrations`
 `$ python manage.py migrate`
 ### Realizar cambio del estado del debug
-#### tallerMecanico/settings.py
+##### tallerMecanico/settings.py
 `DEBUG = False      # Asegurarse de cambiar el atributo a False`
 ### Cambiar la clave secreta
-`$ python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())' 
+`$ python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'` 
 El resultado del comando es tu clave secreta
-#### tallerMecanico/settings.py
+##### tallerMecanico/settings.py
 `SECRET_KEY = 'tu-clave-secreta'    # Asegurarse de cambiar la clave secreta`
 ### Crear superusuario para acceder a la aplicación
 `$ python manage.py createsuperuser`
