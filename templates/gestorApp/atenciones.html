@@ -4,51 +4,53 @@
 {% block titulo %}Pagina de Inicio{% endblock %}
 {% block atenciones %}active{% endblock %}
 {% block css %}
-<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 <link rel="stylesheet" href="{% static 'css/dataTables.bootstrap5.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
 {% endblock %}
 
 {% block contenido %}
     <div class="container mt-5">
-        <h1>Registrar Atención</h1>
+    <div class="row mx-auto">
+        <h2 class="mb-4">Registrar Atención</h2>
+    </div>
         <form method="post">
             {% csrf_token %}
-            <div class="form-group">
-                <label for="idPropietario">Cliente:</label>
-                {{ form.idPropietario }}
-                {% for error in form.idPropietario.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
+            <div class="row mx-auto">
+                <div class="form-group col-6">
+                    <label for="idPropietario">Cliente:</label>
+                    {{ form.idPropietario }}
+                    {% for error in form.idPropietario.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                <div class="form-group col-6">
+                    <label for="idVehiculo">Vehiculo:</label>
+                    {{ form.idVehiculo }}
+                    {% for error in form.idVehiculo.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div> 
+            <div class="row mx-auto">
+                <div class="form-group col-6 mt-2">
+                    <label for="fechaInicio">Fecha de inicio:</label>
+                    {{ form.fechaInicio }}
+                </div>
+                <div class="form-group col-6 mt-2">
+                    <label for="estado">Estado:</label>
+                    {{ form.estado }}
+                </div>
             </div>
-            <div class="form-group">
-                <label for="fechaInicio">Fecha de inicio:</label>
-                {{ form.fechaInicio }}
+            <div class="row mx-auto">
+                <div class="form-group mt-2">
+                    <label for="descripcion">Descripción:</label>
+                    {{ form.descripcion }}
+                </div>
             </div>
-            <div class="form-group">
-                <label for="idVehiculo">Vehiculo:</label>
-                {{ form.idVehiculo }}
-                {% for error in form.idVehiculo.errors %}
-                    <div class="text-danger">{{ error }}</div>
-                {% endfor %}
-            </div>
-            <div class="form-group">
-                <label for="descripcion">Descripción:</label>
-                {{ form.descripcion }}
-            </div>
-            <div class="form-group">
-                <label for="estado">Estado:</label>
-                {{ form.estado }}
-            </div>
-            <div class="row">
-                <div class="col-3">
+            <div class="row mx-auto">
+                <div class="col-3 mt-2">
                     <button type="submit" class="btn btn-primary my-3">Guardar</button>
-                </div>
-                <div class="col-3">
-                    <a data-url="{% url 'editar_atencion' 0 %}" type="button" class="btn btn-light border my-3 disabled" id="btnEditar">Editar</a>
-                </div>
-                <div class="col-3 d-flex justify-content-end">
-                    <a data-url="{% url 'generate_pdf' 0 %}" type="button" class="btn btn-success border my-3 disabled" id="btnBoleta">Generar Boleta</a>
                 </div>
             </div>
         </form>
@@ -79,7 +81,9 @@
                     <td>{{ atencion.get_estado_display }}</td>
                     <td class="d-flex justify-content-between">
                         <a href="{% url 'modificarAtencion' atencion.id %}" class="btn btn-warning">Editar</a>
-                        <a href="{% url 'agregar_repuesto' atencion.id %}" class="btn btn-info">Agregar Repuestos</a>
+                        {% if atencion.get_estado_display == "Pendiente" %}
+                            <a href="{% url 'agregar_repuesto' atencion.id %}" class="btn btn-info">Agregar Repuestos</a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}
@@ -89,6 +93,7 @@
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
     <script src="{% static 'js/datatables.min.js' %}"></script>
     <script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/lux/bootstrap.min.css">
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function() {

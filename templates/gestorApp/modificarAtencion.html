@@ -6,12 +6,11 @@
 {% block css %}
 <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
 <link rel="stylesheet" href="{% static 'css/dataTables.bootstrap5.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
 {% endblock %}
 
 {% block contenido %}
     <div class="container mt-5">
-        <h1>Modificar Atención</h1>
+        <h2>Modificar Atención</h2>
         <form action="{% url 'editar_atencion' atencion.id %}" method="POST" enctype="multipart/form-data">            
             {% csrf_token %}
             <div class="form-group">
@@ -48,6 +47,8 @@
         </form>
     </div>
     <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/lux/bootstrap.min.css">
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const clienteSelect = document.getElementById('idPropietario');

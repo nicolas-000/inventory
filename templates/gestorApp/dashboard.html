@@ -4,9 +4,9 @@
 {% block titulo %}Pagina de Inicio{% endblock %}
 
 {% block css %}
-<link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet"/>
 <link rel="stylesheet" href="{% static 'css/dataTables.bootstrap5.min.css' %}"/>
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+<link rel="stylesheet" href="{% static 'css/cardStyle.css' %}">
 {% endblock %}
 
 {% block contenido %}
@@ -18,7 +18,7 @@
                 <a href="{% url 'agendar' %}" class="card-link">
                     <div class="card card-clickable">
                       <div class="card-body">
-                        <h2 class="text-center mb-4">Agenda</h2>
+                        <h2 class="text-center mb-4 text-black">Agenda</h2>
                         <div class="text-center mb-4">
                           <img src="{% static 'img/agenda.png' %}" alt="Agenda" class="img-fluid" style='width:128px'>
                         </div>
@@ -30,7 +30,7 @@
                 <a href="{% url 'vehiculo_create' %}" class="card-link">
                     <div class="card card-clickable">
                       <div class="card-body">
-                        <h2 class="text-center mb-4">Vehículos</h2>
+                        <h2 class="text-center mb-4 text-black">Vehículos</h2>
                         <div class="text-center mb-4">
                           <img src="{% static 'img/vehiculo.png' %}" alt="Vehículos" class="img-fluid" style='width:128px'>
                         </div>
@@ -42,7 +42,7 @@
                 <a href="{% url 'clientes' %}" class="card-link">
                     <div class="card card-clickable">
                       <div class="card-body">
-                        <h2 class="text-center mb-4">Clientes</h2>
+                        <h2 class="text-center mb-4 text-black">Clientes</h2>
                         <div class="text-center mb-4">
                           <img src="{% static 'img/clientes.png' %}" alt="clientes" class="img-fluid" style='width:128px'>
                         </div>
@@ -54,7 +54,7 @@
                 <a href="{% url 'atenciones' %}" class="card-link">
                     <div class="card card-clickable">
                       <div class="card-body">
-                        <h2 class="text-center mb-4">Atenciones</h2>
+                        <h2 class="text-center mb-4 text-black">Atenciones</h2>
                         <div class="text-center mb-4">
                           <img src="{% static 'img/factura.png' %}" alt="factura" class="img-fluid" style='width:128px'>
                         </div>
@@ -114,6 +114,7 @@
 <script src="{% static 'js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'js/datatables.min.js' %}"></script>
 <script src="{% static 'js/dataTables.responsive.min.js' %}"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/lux/bootstrap.min.css">
 <!-- Script Datatable -->
 <script>
     $(document).ready(function () {

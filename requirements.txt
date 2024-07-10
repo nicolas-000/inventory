@@ -2,3 +2,7 @@ asgiref==3.8.1
 Django==5.0.6
 sqlparse==0.5.0
 reportlab
+django-crispy-forms
+crispy-bootstrap5
+djangorestframework
+xhtml2pdf

@@ -1,54 +1,52 @@
 {% extends "gestorApp/base.html" %}
+{% load static %}
 
 {% block titulo %}Pagina de Inicio{% endblock %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'css/loginStyle.css' %}">
+<style>
+body {
+    
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/lux/bootstrap.min.css">
+{% endblock %}
 
 {% block navbar %}
-<nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
-  <div class="container-fluid px-auto">
-      <a class="navbar-brand mx-auto h1 fs-1" href="#">Taller Mecanico Familia Callejas</a>
-  </div>
-</nav>
+ 
 {% endblock %}
 
 {% block contenido %}
 <div class="container">
-  <div class="row justify-content-center mt-5">
-    {% if user.is_authenticated %}
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="text-center mb-4">Bienvenido/a {{ user.nombreCompleto }}</h2>
-                <div class="row justify-content-between">
-                    <div class="col-md-4 mx-auto">
-                        <a href="{% url 'logout' %}" type="button" class="btn btn-danger btn-block mx-auto">Cerrar Sesión</a>
-                    </div><div class="col-md-4 mx-auto">
-                        <a href="{% url 'dashboard' %}" type="button" class="btn btn-primary btn-block mx-auto">Ir al Inicio</a>
+        <div class="row justify-content-center">
+            <div class="login-container col-sm-6">
+                <div class="login-content">
+                    {% if user.is_authenticated %}
+                    <div class="auth-content">
+                        <h2 class="text-center">¿Que quieres hacer {{ user.nombreCompleto }}?</h2>
+                        <div class="buttons">
+                            <a href="{% url 'logout' %}" class="btn btn-danger">Cerrar Sesión</a>
+                            <a href="{% url 'dashboard' %}" class="btn btn-primary">Ir al Inicio</a>
+                        </div>
                     </div>
+                    {% else %}
+                    <h2 class="login-title">Bienvenida Familia Callejas</h2>
+                    <form method="POST" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-warning btn-block">Entrar</button>
+                    </form>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
-    {% else %}
-      <div class="col-md-4">
-          <div class="card">
-              <div class="card-body">
-                  <h2 class="text-center mb-4">Inicio de Sesión</h2>
-                  <form method="POST" action="{% url 'login' %}">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <div class="row">
-                        <div class="d-grid col-12 mt-3">
-                            <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
-                        </div>
-                        <div class="col-6">
-                            <!-- <button type="submit" class="btn btn-danger btn-block">Salir</button> -->
-                        </div>
-                    </div>
-                  </form>
-              </div>
-          </div>
-      </div>
-    {% endif %}
-  </div>
-</div>
 {% endblock %}

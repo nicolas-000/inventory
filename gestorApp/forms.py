@@ -5,8 +5,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import get_user_model
 
 class CustomAuthenticationForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': '11111111-1'}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': '*************'}), label='Contraseña')
+    username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese el RUT'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese su contraseña'}), label='Contraseña')
 
     class Meta:
         model = get_user_model()
@@ -132,4 +132,7 @@ class BoletaForm(forms.ModelForm):
         fields = ['totalMO']
         labels = {
             'totalMO': 'Costo Mano de Obra',
+        }
+        widgets = {
+            'totalMO': forms.NumberInput(attrs={'class': 'form-control'}),
         }

@@ -28,7 +28,7 @@ SECRET_KEY = 'django-insecure-zj3@iyez5_wguvaopj7eh5c9s59ia(ln7m6u=%^=ej4s&5*$^^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'gestorApp',
     'crispy_forms',
     'crispy_bootstrap5',
+    'tallerApi',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [

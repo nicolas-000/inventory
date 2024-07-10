@@ -15,11 +15,11 @@ from django.db.models import Count
 from django.core import serializers
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth import logout
-from xhtml2pdf import pisa
-from django.template.loader import get_template
+from django.template.loader import get_template,render_to_string
 from django.conf import settings
 import os
 from datetime import datetime
+from xhtml2pdf import pisa
 
 
 # Create your views here.
@@ -270,131 +270,36 @@ def detalle_boleta(request, atencion_id):
         'boleta': boleta,
         'repuestos': repuestos
     })
+    
+    
 def generar_pdf_boleta(request, atencion_id):
-    boleta = get_object_or_404(Boleta, atencion_id=atencion_id)
-    repuestos = Repuestos.objects.filter(atencion_id=atencion_id)
-
-    # Calcular el subtotal sumando el costo de cada repuesto multiplicado por su cantidad
+    atencion = get_object_or_404(Atencion, id=atencion_id)
+    boleta = get_object_or_404(Boleta, atencion=atencion)
+    repuestos = Repuestos.objects.filter(atencion=atencion)
+    
+    # Calcular el costo total de repuestos y el total de todo
     subtotal = sum(repuesto.costoRepuesto * repuesto.cantidad for repuesto in repuestos)
     total = subtotal + boleta.totalMO
-
+    
+    # Renderizar la plantilla HTML con el contexto
+    html = render_to_string('gestorApp/boletaTotal.html', {
+        'atencion': atencion,
+        'boleta': boleta,
+        'repuestos': repuestos,
+        'subtotal': subtotal,
+        'total': total
+    })
+    
+    # Crear el objeto HttpResponse con el tipo de contenido adecuado
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="boleta_{boleta.atencion.id}.pdf"'
-
-    # Create PDF document in landscape mode
-    doc = SimpleDocTemplate(response, pagesize=landscape(letter))
-    styles = getSampleStyleSheet()
-    elements = []
-
-    title = Paragraph(f'Boleta de Atención: {boleta.atencion.id}', styles['Title'])
-    elements.append(title)
-
-    cliente_info = [
-        ['Cliente:', boleta.atencion.idPropietario.nombreCompleto],
-        ['Vehículo:', boleta.atencion.idVehiculo.marca],
-        ['Descripción:', boleta.atencion.descripcion],
-        ['Fecha de Atención:', boleta.atencion.fechaInicio.strftime('%d/%m/%Y')],
-    ]
-    table = Table(cliente_info, hAlign='LEFT', colWidths=[150, 350])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ]))
-    elements.append(table)
-    elements.append(Spacer(1, 12))
-
-    boleta_info = [
-        ['Subtotal:', f'${subtotal:.2f}'],
-        ['Costo Mano de Obra:', f'${boleta.totalMO:.2f}'],
-        ['Total:', f'${total:.2f}'],
-    ]
-    table = Table(boleta_info, hAlign='LEFT', colWidths=[150, 350])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ]))
-    elements.append(table)
-    elements.append(Spacer(1, 12))
-
-    repuestos_info = [[
-        'Nombre', 'Marca', 'Costo', 'Cantidad', 'Total'
-    ]] + [
-        [repuesto.nombreRepuesto, repuesto.marca, f'${repuesto.costoRepuesto:.2f}', repuesto.cantidad, f'${repuesto.costoRepuesto * repuesto.cantidad:.2f}']
-        for repuesto in repuestos
-    ]
-    table = Table(repuestos_info, hAlign='LEFT', colWidths=[150, 150, 100, 100, 100])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
-    ]))
-    elements.append(table)
-
-    # Handle pagination
-    def on_first_page(canvas, doc):
-        canvas.saveState()
-        canvas.setFont('Helvetica', 12)
-        canvas.drawString(100, 580, 'Taller Mecanico Familia Callejas')
-        canvas.restoreState()
-
-    def on_later_pages(canvas, doc):
-        canvas.saveState()
-        canvas.setFont('Helvetica', 12)
-        canvas.drawString(100, 580, 'Taller Mecanico Familia Callejas')
-        canvas.restoreState()
-
-    frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height - 2 * doc.bottomMargin, id='normal')
-    template = PageTemplate(id='test', frames=[frame], onPage=on_first_page, onPageEnd=on_later_pages)
-    doc.addPageTemplates([template])
-
-    doc.build(elements)
-
-    return response
-
-
-#BOLETA
-def render_to_pdf(template_src, context_dict={}):
-    template = get_template(template_src)
-    html = template.render(context_dict)
-    result = HttpResponse(content_type='application/pdf')
-    pisa_status = pisa.CreatePDF(html, dest=result)
+    response['Content-Disposition'] = f'attachment; filename="boleta_{atencion.id}.pdf"'
+    
+    # Crear el PDF
+    pisa_status = pisa.CreatePDF(html, dest=response)
+    
+    # Verificar si hay errores
     if pisa_status.err:
-        return HttpResponse('We had some errors <pre>' + html + '</pre>')
-    return result
-
-def generate_pdf_view(request, atencion_id):
-    data = get_object_or_404(Atencion, id=atencion_id)
-    context = {'data': str(data)}
-    template = 'gestorApp/boleta.html'
-    pdf = render_to_pdf(template, context)
-
-    # Save the PDF
-    pdf_filename = 'boleta-' + str(datetime.now()) + ".pdf"
-    pdf_path = os.path.join(settings.BOLETA_PDF_DIR, pdf_filename)
-    with open(pdf_path, 'wb') as f:
-        pisa_status = pisa.CreatePDF(pdf.content, dest=f)
-        if pisa_status.err:
-            return HttpResponse('We had some errors <pre>' + pdf.content + '</pre>')
-
-    return HttpResponse(f'PDF generated and saved as {pdf_filename}')
-
-def serve_pdf_view(request, filename):
-    pdf_path = os.path.join(settings.BOLETA_PDF_DIR, filename)
-    if os.path.exists(pdf_path):
-        return FileResponse(open(pdf_path, 'rb'), content_type='application/pdf')
-    else:
-        raise Http404
+        return HttpResponse('Hubo un error al generar el PDF', status=400)
+    
+    return response
+    

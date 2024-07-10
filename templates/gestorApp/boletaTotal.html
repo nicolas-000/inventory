@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .center {
+            text-align: center;
+        }
+        .left {
+            text-align: left;
+        }
+        .right {
+            text-align: right;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <p class="center"><em><strong>BOLETA N&deg; ( {{ boleta.id }} )</strong></em></p>
+    <p class="center"><em><strong>{{ atencion.idVehiculo.marca }}</strong></em></p>
+    <p class="center"><em><strong>({{ atencion.fechaInicio }})</strong></em></p>
+    <p class="left"><em><strong>Patente: {{ atencion.idVehiculo.patente }}<br /></strong></em></p>
+    <p class="left"><em><strong>Due&ntilde;o del vehiculo: {{ atencion.idPropietario.nombreCompleto }}</strong></em></p>
+    <p class="center">&nbsp;</p>
+    <p class="left"><em><strong>REPUESTOS:</strong></em></p>
+    <table>
+        <thead>
+            <tr>
+                <th><em>Nombre del Repuesto</em></th>
+                <th><em>Marca</em></th>
+                <th><em>Cantidad</em></th>
+                <th><em>Costo</em></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for repuesto in repuestos %}
+            <tr>
+                <td>{{ repuesto.nombreRepuesto }}</td>
+                <td>{{ repuesto.marca }}</td>
+                <td>{{ repuesto.cantidad }}</td>
+                <td>{{ repuesto.costoRepuesto }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <table>
+        <tr>
+            <td style="width: 75%; text-align: center;"><em><strong>Costo total de Repuestos</strong></em></td>
+            <td style="width: 25%; text-align: center;">{{ subtotal }}</td>
+        </tr>
+    </table>
+    <p>&nbsp;</p>
+    <p class="left"><strong><em>MANO DE OBRA:</em></strong></p>
+    <table>
+        <tr>
+            <td style="width: 75%; text-align: center;">{{ atencion.descripcion }}</td>
+            <td style="width: 25%; text-align: center;">{{ boleta.totalMO }}</td>
+        </tr>
+        <tr>
+            <td style="width: 75%; text-align: center;"><em><strong>Total de repuesto y mano de obra</strong></em></td>
+            <td style="width: 25%; text-align: center;">{{ total }}</td>
+        </tr>
+    </table>
+</body>
+</html>

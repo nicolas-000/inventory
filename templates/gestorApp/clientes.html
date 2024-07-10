@@ -1,17 +1,18 @@
-{% extends "gestorApp/base.html" %} {% load static %} {% block titulo %}Gestor
-de Clientes{% endblock %}
+{% extends "gestorApp/base.html" %} 
+{% load static %} 
+{% block titulo %}Gestor de Clientes{% endblock %}
 {% block clientes %}active{% endblock %}
-{% block css %}<link
+{% block css %}
+<link
   rel="stylesheet"
   href="{% static 'css/dataTables.bootstrap5.min.css' %}"
 />
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-{% endblock %} {% block contenido %}
-<div class="container">
-  <div class="text-center my-3">
-    <h1>Clientes</h1>
-  </div>
+<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 
+{% endblock %}
+{% block contenido %}
+<div class="container mt-5">
+  <h2 class="mb-4">Ingresar un Cliente</h2>
   <!-- Formulario Cliente -->
   <form class="row g-3" method="POST">
     {% csrf_token %}
@@ -134,16 +135,16 @@ de Clientes{% endblock %}
       </div>
     </div>
   </div>
-  
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/lux/bootstrap.min.css">
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
   <!-- Tabla -->
   <div class="my-5">
     <table
       id="clientsTable"
-      class="table table-striped table-hover"
-      style="width: 100%"
+      class="table table-striped table-hover text-white"
+      style="width: 100%;"
     >
-      <thead>
+      <thead >
         <tr>
           <th>Rut</th>
           <th>Nombre Completo</th>
