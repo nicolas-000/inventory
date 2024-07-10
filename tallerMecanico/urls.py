@@ -3,7 +3,7 @@ from django.urls import path, include
 from gestorApp import views as vista
 from django.contrib.auth import views as auth_views
 from gestorApp.forms import CustomAuthenticationForm
-from tallerApi import views as vistasApi
+
 
 urlpatterns = [
     path('', auth_views.LoginView.as_view(authentication_form=CustomAuthenticationForm), name='login'),
@@ -43,9 +43,6 @@ urlpatterns = [
     path('atenciones/<int:atencion_id>/boleta/detalle/', vista.detalle_boleta, name='detalle_boleta'),
     path('atenciones/<int:atencion_id>/boleta/pdf/', vista.generar_pdf_boleta, name='generar_pdf_boleta'),
     
-    #APIRESTFULL
-    path('agendaslistApi/',vistasApi.agenda_listado,name='agendasListApi'),
-    path('agendaslistApi/<int:pk>',vistasApi.agenda_detalle,name='agendaDetalleApi'),
     
 ]
 

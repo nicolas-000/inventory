@@ -43,8 +43,6 @@ INSTALLED_APPS = [
     'gestorApp',
     'crispy_forms',
     'crispy_bootstrap5',
-    'tallerApi',
-    'rest_framework',
 ]
 
 MIDDLEWARE = [

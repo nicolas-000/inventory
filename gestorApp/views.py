@@ -4,11 +4,6 @@ from gestorApp.forms import AgendaForm, VehiculoForm,AtencionForm,RepuestoForm,B
 from gestorApp.models import Agenda, Cliente, Vehiculo,Atencion,Repuestos,Boleta, Persona, Boleta
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter, landscape
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Frame, PageTemplate
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.db.models import Count
